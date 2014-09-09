@@ -1,0 +1,81 @@
+<!--
+  A pattern package for creating simple pojo's without equals, hashcode, toString or jpa annotations.
+
+ -->
+<package xmlns="http://www.firstbase.nl/xsd/personaliom/pattern"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.firstbase.nl/xsd/personaliom/pattern http://www.firstbase.nl/xsd/personaliom/pattern.xsd"
+  name="${pattern.property.model.implementation.package}"
+  path="${pattern.property.directory.core}/${pattern.property.java.main.directory}"
+  package="domain_model"
+  skip="true">
+  <class name="${pattern.property.model.implementation.class}" visibility="public" enum="${model.property.object.enum}" foreach="object">
+    <libraries>
+      <library>java.io.Serializable</library>
+    </libraries>
+    <enumConstants condition="${model.property.object.enum}==true">${fmsnippet.java.pojo.enum.enumConstants}</enumConstants>
+    <attribute name="${pattern.property.pk}" access="rw" condition="${fmsnippet.condition.simple_pk_and_no_enum}">
+      <datatype>Long</datatype>
+      <apicomment>primary key</apicomment>
+    </attribute>
+    <attribute name="${attribute.name}" foreach="attribute" access="rw">
+      <datatype>${attribute.type}</datatype>
+      <apicomment>${fmsnippet.java.pojo.attribute.apicomment}</apicomment>
+      <body condition="${propertyExists(${model.property.attribute.entity.default.value})}">${model.property.attribute.entity.default.value}</body>
+      <setterBody>${fmsnippet.java.pojo.operation.setter}</setterBody>
+    </attribute>
+    <attribute name="${reference.name}" foreach="reference" access="rw" condition="${fmsnippet.condition.reference_1_and_enum}">
+      <datatype>${pattern.property.model.implementation.reference}</datatype>
+    </attribute>
+    <attribute name="${reference.name}" foreach="reference" access="rw" condition="${fmsnippet.condition.reference_1_no_enum}"> <!-- ${reference.multiplicity}=0..1 OR ${reference.multiplicity}=1..1 -->
+      <datatype>${pattern.property.model.implementation.reference}</datatype>
+    </attribute>
+    <attribute name="${reference.name}Set" foreach="reference" access="rw" condition="${reference.multiplicity}=0..n OR ${reference.multiplicity}=1..n">
+      <library>java.util.HashSet</library>
+      <library>java.util.Set</library>
+      <datatype>
+        <![CDATA[Set<${pattern.property.model.implementation.reference}>]]>
+      </datatype>
+      <body>
+        <![CDATA[new HashSet<${pattern.property.model.implementation.reference}>()]]>
+      </body>
+    </attribute>
+    <operation name="constructor" condition="${model.property.object.enum}!=true">
+      <apicomment>Default constructor which loads defaults by using method loadDefaults</apicomment>
+      <body>this(true);</body>
+    </operation>
+    <operation name="constructor" condition="${model.property.object.enum}!=true">
+      <apicomment evaluate="true">Constructor with option to load defaults</apicomment>
+      <parameter name="loadDefaults">
+        <datatype>boolean</datatype>
+      </parameter>
+      <body>if (loadDefaults)
+      {
+        loadDefaults();
+      }</body>
+    </operation>
+
+    <operation name="addTo${firstUpper(${reference.name})}" foreach="reference" condition="${reference.multiplicity}=0..n OR ${reference.multiplicity}=1..n">
+      <parameter name="${firstLower(${reference.name})}">
+        <datatype>${pattern.property.model.implementation.reference}</datatype>
+      </parameter>
+      <body>${fmsnippet.java.pojo.operation.addToSet}</body>
+    </operation>
+    <operation name="deleteFrom${firstUpper(${reference.name})}" foreach="reference" condition="${reference.multiplicity}=0..n OR ${reference.multiplicity}=1..n">
+      <parameter name="${firstLower(${reference.name})}">
+        <datatype>${pattern.property.model.implementation.reference}</datatype>
+      </parameter>
+      <body>${fmsnippet.java.pojo.operation.deleteFromSet}</body>
+    </operation>
+    <operation name="getId" condition="${model.property.object.enum}!=true">
+      <annotation>@Override</annotation>
+      <parameter name="return"><datatype>Long</datatype></parameter>
+      <body>return get${firstUpper(${pattern.property.pk})}();</body>
+    </operation>
+    <operation name="setId" condition="${model.property.object.enum}!=true">
+      <annotation>@Override</annotation>
+      <parameter name="id"><datatype>Long</datatype></parameter>
+      <body>set${firstUpper(${pattern.property.pk})}(id);</body>
+    </operation>
+  </class>
+</package>

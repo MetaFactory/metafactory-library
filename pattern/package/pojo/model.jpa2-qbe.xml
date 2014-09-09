@@ -1,0 +1,441 @@
+<package xmlns="http://www.firstbase.nl/xsd/personaliom/pattern"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.firstbase.nl/xsd/personaliom/pattern http://www.firstbase.nl/xsd/personaliom/pattern.xsd"
+  name="${pattern.property.model.implementation.package}"
+  path="${pattern.property.directory.core}/${pattern.property.java.main.directory}"
+  package="domain_model"
+  skip="true">
+  <class name="BaseModel" visibility="public">
+<!--  Een gemeenschappelijk column in de basis class werkt helemaal niet!!
+  
+  Marnix 6-5-2014: Wel als je de base class de juiste annotation mee geeft
+
+    <attribute name="version" access="rw">
+      <library>javax.persistence.Version</library>
+      <library>javax.persistence.Column</library>
+      <datatype>int</datatype>
+      <apicomment>version number to implement optimistic locking</apicomment>
+      <annotation>@Version</annotation>
+      <annotation>@Column(name="version")</annotation>
+      <annotation.getter>@Version</annotation.getter>
+      <annotation.getter>@Column(name="version")</annotation.getter>
+    </attribute>
+ -->
+  </class>
+  <class name="${pattern.property.model.implementation.class}" visibility="public" enum="${model.property.object.enum}" foreach="object">
+    <libraries>
+      <library>java.io.Serializable</library>
+      <library condition="${model.property.object.enum}!=true">javax.persistence.Entity</library>
+      <library condition="${model.property.object.enum}!=true">javax.persistence.Table</library>
+      <library condition="${snippet.condition.composite_pk_and_no_enum}">javax.persistence.IdClass</library>
+      <library condition="${model.property.object.audit}==true">org.hibernate.envers.Audited</library>
+      <library condition="${model.property.object.hibernatesearch}==true">org.hibernate.search.annotations.Indexed</library>
+      <library condition="${model.property.object.enum}!=true">org.querybyexample.jpa.Identifiable</library>
+    </libraries>
+    <annotation condition="${model.property.object.enum}!=true">@Entity</annotation>
+    <annotation condition="${snippet.condition.composite_pk_and_no_enum}">@IdClass(${pattern.property.pk_composite.class}.class)</annotation>
+    <annotation condition="${model.property.object.enum}!=true">${snippet.java.annotation.jpa.table}</annotation>
+<!--
+ -->
+    <annotation condition="${model.property.object.audit}==true">@Audited</annotation>
+    <annotation condition="${model.property.object.hibernatesearch}==true">@Indexed</annotation>
+    <inherits condition="${model.property.object.enum}!=true">BaseModel</inherits>
+    <implements condition="${model.property.object.enum}!=true"><![CDATA[Identifiable<Long>]]></implements>
+    <implements>Serializable</implements>
+    <enumConstants condition="${model.property.object.enum}==true">${snippet.java.pojo.enumConstants}</enumConstants>
+    <attribute name="serialVersionUID" visibility="private" static="true" final="true">
+      <datatype>long</datatype>
+      <body>${model.property.object.serialVersionUID}</body>
+    </attribute>
+    <attribute name="${pattern.property.pk}" access="rw" condition="${snippet.condition.simple_pk_and_no_enum}">
+      <library>javax.persistence.Column</library>
+      <library>javax.persistence.Id</library>
+      <library>javax.persistence.GenerationType</library>
+      <library>javax.persistence.GeneratedValue</library>
+      <library condition="${model.property.object.hibernatesearch}==true">org.hibernate.search.annotations.DocumentId</library>
+      <datatype>Long</datatype>
+      <apicomment>primary key</apicomment>
+<!--
+      <annotation.getter>@Id</annotation.getter>
+      <annotation.getter>@Column(name="id", unique = true, nullable = false)</annotation.getter>
+      <annotation.getter>@GeneratedValue(strategy=GenerationType.AUTO)</annotation.getter>
+
+      LET OP: ONDERSTAANDE NAAM VAN DE COLUMN MOET OVEREEN KOMEM MET JOINCOLUMN ANNOTATION
+ -->
+      <annotation>@Id</annotation>
+      <annotation>@Column(name="${allLower(${object.name})}_id", unique = true, nullable = false)</annotation>
+      <annotation>@GeneratedValue(strategy=GenerationType.SEQUENCE)</annotation>
+<!--
+      <annotation>@GeneratedValue(strategy=GenerationType.AUTO)</annotation>
+ -->
+      <annotation condition="${model.property.object.hibernatesearch}==true">@DocumentId</annotation>
+    </attribute>
+<!--
+    Onderstaand attribuut zou ik kunnen gebruiken, maar er zijn in jpa2 2 mogelijkheden om om te gaan
+    met composite primary keys (zie http://www.coderanch.com/t/486475/ORM/java/JPA-composite-primary-key-classes onderaan)
+    Ik kies er nu voor om alle velden die in de composite primary key gebruikt worden te voorzien van @Id
+
+    <attribute name="${pattern.property.pk_composite.name}" access="rw" condition="${snippet.condition.composite_pk_and_no_enum}">
+      <library>javax.persistence.EmbeddedId</library>
+      <datatype>${pattern.property.pk_composite.class}</datatype>
+      <apicomment>composite primary key</apicomment>
+      <annotation.getter>@EmbeddedId</annotation.getter>
+    </attribute>
+ -->
+    <attribute name="version" access="rw" condition="${model.property.object.enum}!=true">
+      <library>javax.persistence.Version</library>
+      <library>javax.persistence.Column</library>
+      <datatype>Integer</datatype>
+      <apicomment>version number to implement optimistic locking</apicomment>
+      <annotation>@Version</annotation>
+      <annotation>@Column(name="version", nullable= false, columnDefinition = "integer DEFAULT 0")</annotation>
+<!--
+      <annotation.getter>@Version</annotation.getter>
+      <annotation.getter>@Column(name="version")</annotation.getter>
+ -->
+    </attribute>
+    <attribute name="created" access="rw" condition="${model.property.object.audit.create}=true">
+      <library>javax.persistence.Column</library>
+      <library>javax.validation.constraints.NotNull</library>
+      <datatype>Date</datatype>
+      <apicomment>Creation time of record</apicomment>
+      <annotation>@Column(name="created", nullable = false)</annotation>
+      <annotation>@NotNull</annotation>
+<!--
+      <annotation.getter>@Column(name="CREATED", nullable = false)</annotation.getter>
+ -->
+    </attribute>
+    <attribute name="creator" access="rw" condition="${model.property.object.audit.create}=true">
+      <library>javax.persistence.Column</library>
+      <library>org.hibernate.validator.constraints.NotEmpty</library>
+      <datatype>String</datatype>
+      <apicomment>Username who created this record</apicomment>
+      <annotation>@Column(name="creator", nullable = false)</annotation>
+      <annotation>@NotEmpty</annotation>
+<!--
+      <annotation.getter>@Column(name="CREATOR", nullable = false)</annotation.getter>
+ -->
+    </attribute>
+    <attribute name="modified" access="rw" condition="${model.property.object.audit.modify}=true">
+      <library>javax.persistence.Column</library>
+      <library>javax.validation.constraints.NotNull</library>
+      <datatype>Date</datatype>
+      <apicomment>Modification time of record</apicomment>
+      <annotation>@Column(name="modified", nullable = false)</annotation>
+      <annotation>@NotNull</annotation>
+<!--
+      <annotation.getter>@Column(name="MODIFIED", nullable = false)</annotation.getter>
+ -->
+    </attribute>
+    <attribute name="modifier" access="rw" condition="${model.property.object.audit.modify}=true">
+      <library>javax.persistence.Column</library>
+      <library>org.hibernate.validator.constraints.NotEmpty</library>
+      <datatype>String</datatype>
+      <apicomment>Username who modified this record</apicomment>
+      <annotation>@Column(name="modifier", nullable = false)</annotation>
+      <annotation>@NotEmpty</annotation>
+<!--
+      <annotation.getter>@Column(name="MODIFIER", nullable = false)</annotation.getter>
+ -->
+    </attribute>
+    <attribute name="englishTranslation" access="rw" condition="${model.property.object.enum_use}=true">
+      <library>javax.persistence.Column</library>
+      <datatype>String</datatype>
+      <apicomment>English translation for this object</apicomment>
+      <annotation.getter>@Column(name="${generated.attribute.name}", nullable = false)</annotation.getter>
+    </attribute>
+    <attribute name="dutchTranslation" access="rw" condition="${model.property.object.enum_use}=true">
+      <library>javax.persistence.Column</library>
+      <datatype>String</datatype>
+      <apicomment>Dutch translation for this object</apicomment>
+      <annotation.getter>@Column(name="${generated.attribute.name}", nullable = false)</annotation.getter>
+    </attribute>
+    <attribute name="${attribute.name}" foreach="attribute" access="rw">
+      <library>javax.persistence.Column</library>
+      <library condition="${model.property.attribute.database.pk.composite}==true">javax.persistence.Id</library>
+      <library condition="${model.property.attribute.hibernatesearch.field}==true">org.hibernate.search.annotations.Field</library>
+      <datatype>${attribute.type}</datatype>
+      <apicomment>${snippet.java.model.attribute.apicomment}</apicomment>
+      <annotation condition="${model.property.attribute.database.pk.composite}==true">@Id</annotation>
+<!--
+      <annotation.getter>${snippet.java.annotation.jpa.column}</annotation.getter>
+      <annotation.getter>${snippet.java.annotation.jpa.required}</annotation.getter>
+      <annotation.getter>${snippet.java.annotation.constraints.min}</annotation.getter>
+      <annotation.getter>${snippet.java.annotation.constraints.max}</annotation.getter>
+      <annotation.getter>${snippet.java.annotation.constraints.size}</annotation.getter>
+      <annotation.getter>${snippet.java.annotation.constraints.email}</annotation.getter>
+      <annotation.getter>${snippet.java.annotation.constraints.future}</annotation.getter>
+      <annotation.getter>${snippet.java.annotation.constraints.past}</annotation.getter>
+ -->
+      <annotation>${snippet.java.annotation.jpa.column}</annotation>
+      <annotation>${snippet.java.annotation.jpa.required}</annotation>
+      <annotation>${snippet.java.annotation.constraints.min}</annotation>
+      <annotation>${snippet.java.annotation.constraints.max}</annotation>
+      <annotation>${snippet.java.annotation.constraints.size}</annotation>
+      <annotation>${snippet.java.annotation.constraints.email}</annotation>
+      <annotation>${snippet.java.annotation.constraints.future}</annotation>
+      <annotation>${snippet.java.annotation.constraints.past}</annotation>
+      <annotation condition="${model.property.attribute.hibernatesearch.field}==true">@Field</annotation>
+
+      <body condition="${propertyExists(${model.property.attribute.entity.default.value})}">${model.property.attribute.entity.default.value}</body>
+      <setterBody>${snippet.java.model.operation.setter}</setterBody>
+    </attribute>
+    <attribute name="${reference.name}" foreach="reference" access="rw" condition="${snippet.condition.reference_1_and_enum}">
+      <library>javax.persistence.Column</library>
+      <datatype>${pattern.property.model.implementation.reference}</datatype>
+      <annotation>${snippet.java.annotation.jpa.column_enum}</annotation>
+      <annotation>${snippet.java.annotation.jpa.required_enum}</annotation>
+    </attribute>
+<!--  TODO: Afhankelijk van of de andere kant van de reference een n multiplicity naar jou heeft
+      moet dit gemodelleerd worden als een OneToOne of een ManyToOne
+      => Klopt helemaal niet, moet altijd ManyToOne worden (tenzij hij unique moet zijn)
+ -->
+    <attribute name="${reference.name}" foreach="reference" access="rw" condition="${snippet.condition.reference_1_no_enum}"> <!-- ${reference.multiplicity}=0..1 OR ${reference.multiplicity}=1..1 -->
+      <library>javax.persistence.JoinColumn</library>
+      <library condition="${model.property.reference.database.pk.composite}==true">javax.persistence.Id</library>
+      <datatype>${pattern.property.model.implementation.reference}</datatype>
+      <annotation condition="${model.property.reference.database.pk.composite}==true">@Id</annotation>
+      <annotation>${snippet.java.annotation.jpa.joincolumn}</annotation>
+      <annotation>${snippet.java.annotation.jpa.manytoone}</annotation>
+<!--
+      <annotation.getter>@OneToOne (cascade={CascadeType.PERSIST, CascadeType.MERGE})</annotation.getter>
+ -->
+    </attribute>
+    <attribute name="${reference.name}Set" foreach="reference" access="rw" condition="${reference.multiplicity}=0..n">
+      <library>java.util.HashSet</library>
+      <library>java.util.Set</library>
+      <library>javax.persistence.FetchType</library>
+      <library>javax.persistence.OneToMany</library>
+      <library>javax.persistence.CascadeType</library>
+      <datatype>
+        <![CDATA[Set<${pattern.property.model.implementation.reference}>]]>
+      </datatype>
+      <!--
+      <annotation.getter>${snippet.java.annotation.jpa.onetomany}</annotation.getter>
+      -->
+      <annotation>${snippet.java.annotation.jpa.onetomany}</annotation>
+      <body>
+        <![CDATA[new HashSet<${pattern.property.model.implementation.reference}>()]]>
+      </body>
+    </attribute>
+    <attribute name="${reference.name}Set" foreach="reference" access="rw" condition="${reference.multiplicity}=1..n">
+      <library>java.util.HashSet</library>
+      <library>java.util.Set</library>
+      <library>javax.persistence.FetchType</library>
+      <library>javax.persistence.OneToMany</library>
+      <library>javax.persistence.CascadeType</library>
+      <datatype>
+        <![CDATA[Set<${pattern.property.model.implementation.reference}>]]>
+      </datatype>
+<!--
+      <annotation.getter>${snippet.java.annotation.jpa.onetomany}</annotation.getter>
+ -->
+      <annotation>${snippet.java.annotation.jpa.onetomany}</annotation>
+      <body>
+        <![CDATA[new HashSet<${pattern.property.model.implementation.reference}>()]]>
+      </body>
+    </attribute>
+    <operation name="constructor" condition="${model.property.object.enum}!=true">
+      <apicomment>Default constructor which loads defaults by using method loadDefaults</apicomment>
+      <body>this(true);</body>
+    </operation>
+    <operation name="constructor" condition="${model.property.object.enum}!=true">
+      <apicomment evaluate="true">Constructor with option to load defaults</apicomment>
+      <parameter name="loadDefaults">
+        <datatype>boolean</datatype>
+      </parameter>
+      <body>if (loadDefaults)
+      {
+        loadDefaults();
+      }</body>
+    </operation>
+    <operation name="constructor" condition="${snippet.condition.simple_pk_and_no_enum}">
+      <apicomment>Constructor with primary key as parameter</apicomment>
+      <parameter name="${pattern.property.pk}">
+        <datatype>Long</datatype>
+      </parameter>
+      <body>this.${pattern.property.pk} = ${pattern.property.pk};</body>
+    </operation>
+
+    <operation name="constructor" visibility="${fmsnippet.attribute.visibility_of_constructor}" foreach="currentModelObject.property.createConstructor" var0="${forEachPropertyValue}">
+      <parameter name="${attribute.name}" foreach="attribute.property.useInConstructor" condition="${forEachPropertyValue}=${var0}">
+        <datatype> ${attribute.type}</datatype>
+      </parameter>
+      <parameter name="${reference.name}" foreach="reference.property.useInConstructor" condition="${forEachPropertyValue}=${var0}">
+        <datatype> ${reference.type}</datatype>
+      </parameter>
+      <body>${fmsnippet.java.model.operation.constructorUsingFields} </body>
+    </operation>
+
+    <operation name="addTo${firstUpper(${reference.name})}" foreach="reference" condition="${reference.multiplicity}=0..n OR ${reference.multiplicity}=1..n">
+      <parameter name="${firstLower(${reference.name})}">
+        <datatype>${pattern.property.model.implementation.reference}</datatype>
+      </parameter>
+      <body>${snippet.java.model.operation.addToSet}</body>
+<!--
+      <body>${firstLower(${reference.name})}.${getSetterName(${reference.type},${object.name})}(this);
+          this.${reference.name}Set.add(${firstLower(${reference.name})});
+      </body>
+ -->
+    </operation>
+    <operation name="deleteFrom${firstUpper(${reference.name})}" foreach="reference" condition="${reference.multiplicity}=0..n OR ${reference.multiplicity}=1..n">
+      <parameter name="${firstLower(${reference.name})}">
+        <datatype>${pattern.property.model.implementation.reference}</datatype>
+      </parameter>
+      <body>${snippet.java.model.operation.deleteFromSet}</body>
+<!--
+      <body>this.${reference.name}Set.remove(${firstLower(${reference.name})});
+          ${firstLower(${reference.name})}.${getSetterName(${reference.type},${object.name})}(null);
+      </body>
+ -->
+    </operation>
+    <operation name="equals" condition="${model.property.object.enum}!=true"> <!-- ${snippet.condition.simple_pk_and_no_enum} -->
+      <parameter name="return">
+        <datatype>
+          <![CDATA[boolean]]>
+        </datatype>
+      </parameter>
+      <parameter name="other">
+        <datatype>
+          <![CDATA[Object]]>
+        </datatype>
+      </parameter>
+      <body>${fmsnippet.java.model.operation.equals.equals_support_compositePk}</body>
+    </operation>
+    <operation name="equalsByPK" condition="${snippet.condition.simple_pk_and_no_enum}">
+      <apicomment>
+        <![CDATA[Return true if primary keys are equal (and not 0), otherwise false]]>
+      </apicomment>
+      <parameter name="return">
+        <datatype>
+          <![CDATA[boolean]]>
+        </datatype>
+      </parameter>
+      <parameter name="${firstLower(${object.name})}">
+        <datatype><![CDATA[${pattern.property.model.implementation.class}]]></datatype>
+      </parameter>
+      <body><!-- Marnix 2010-01-19: Met al die proxies van tegenwoordig is het heel belangrijk dat zelfs de pk dmv de getter wordt opgehaald -->
+        <![CDATA[return this.get${firstUpper(${pattern.property.pk})}().equals(${firstLower(${object.name})}.get${firstUpper(${pattern.property.pk})}());]]>
+      </body>
+    </operation>
+    <operation name="equalsByBK" visibility="private" condition="${model.property.object.enum}!=true">
+      <!--  condition="${model.property.object.enum}!=true" -->
+      <apicomment>TODO: Set javadoc (from FreeMarker)</apicomment>
+      <parameter name="return">
+        <datatype>boolean</datatype>
+      </parameter>
+      <parameter name="${firstLower(${object.name})}">
+        <datatype>${pattern.property.model.implementation.class}</datatype>
+      </parameter>
+      <body>${fmsnippet.java.model.operation.equals.equalsByBK}</body>
+    </operation>
+    <operation name="hashCode" condition="${model.property.object.enum}!=true">
+      <parameter name="return">
+        <datatype>integer</datatype>
+      </parameter>
+      <body>${snippet.java.model.operation.hashcode.hashcodeByBK}</body>
+    </operation>
+    <operation name="toString">
+      <parameter name="return">
+        <datatype>String</datatype>
+      </parameter>
+      <body>${snippet.java.model.operation.tostring}</body>
+    </operation>
+    <operation name="getLabel">
+      <library>javax.persistence.Transient</library>
+      <apicomment>Create a short representation of ${object.name} which
+      can be used in combo's</apicomment>
+      <annotation>@Transient</annotation>
+      <parameter name="return"><datatype>String</datatype></parameter>
+      <body>${fmsnippet.java.pojo.jpa2.label}</body>
+    </operation>
+    <!-- Marnix 2009-11-29: getLabel method has the same purpose as a LabelProvider in JFace -->
+    <!-- Marnix 2012-11-27: copied from seamannotated model class -->
+    <operation name="createLabel">
+      <library>javax.persistence.Transient</library>
+      <library>java.util.Map</library>
+      <apicomment>Create a short representation of ${object.name} which
+      can be used in combo's</apicomment>
+      <annotation>@Transient</annotation>
+      <parameter name="return"><datatype>String</datatype></parameter>
+      <parameter name="messages"><datatype><![CDATA[Map<String, String>]]></datatype></parameter>
+<!--
+Marnix 2012-01-17: Ik weet niet hoe het nu met deze locale param zit.
+Waarschijnlijk is hij toegevoegd tijdens de ontwikkeling van balicense, maar ik loop nu
+vast tijdens clubadmin hergenereer, omdat voor sommige entities nu deze param wordt
+toegevoegd, terwijl hij in de facelets niet gebruikt wordt
+
+      <parameter name="locale" condition="${model.property.object.enum_use}=true">
+        <library>java.util.Locale</library>
+        <datatype>Locale</datatype>
+        <apicomment>The class ${generated.class.name} is used as a enum, but is stored in database. Each has record has
+        a translation for different languages. The paramater language is used to indicate what translation to use.</apicomment>
+      </parameter>
+      <body>${snippet.java.pojo.seamannotated.model.implementation.projectSpecificLabel}</body>
+      Marnix 2013-07-01: pad naar projectSpecificLabel veranderd (is niet seam specifiek meer).
+      Het idee is dat er vanaf de projectSpecificLabel template een aanroep naar een template in de
+      metafactory library wordt gedaan voor de entiteiten die geen specifieke dingen hebben.
+ -->
+      <body>${snippet.java.pojo.jpa2.projectSpecificLabel}</body>
+    </operation>
+    <operation name="loadDefaults" condition="${model.property.object.enum}!=true">
+      <apicomment>load default values of some fields</apicomment>
+      <body>${fmsnippet.java.pojo.jpa2.loadDefaults}</body>
+    </operation>
+    <operation name="getId" condition="${model.property.object.enum}!=true">
+      <annotation>@Override</annotation>
+      <parameter name="return"><datatype>Long</datatype></parameter>
+      <body>return get${firstUpper(${pattern.property.pk})}();</body>
+    </operation>
+    <operation name="setId" condition="${model.property.object.enum}!=true">
+      <annotation>@Override</annotation>
+      <parameter name="id"><datatype>Long</datatype></parameter>
+      <body>set${firstUpper(${pattern.property.pk})}(id);</body>
+    </operation>
+    <operation name="isIdSet" condition="${model.property.object.enum}!=true">
+      <annotation>@Override</annotation>
+      <parameter name="return"><datatype>boolean</datatype></parameter>
+      <body>return ${pattern.property.pk} != null;</body>
+    </operation>
+  </class>
+  <class name="${pattern.property.pk_composite.class}" visibility="public" enum="false" condition="${snippet.condition.composite_pk_and_no_enum}" foreach="object">
+    <apicomment>Composite primary key class used for entity ${object.name}</apicomment>
+    <libraries>
+        <library>java.io.Serializable</library>
+    </libraries>
+    <implements>Serializable</implements>
+    <attribute name="serialVersionUID" visibility="private" static="true" final="true">
+      <datatype>long</datatype>
+      <body>${model.property.object.serialVersionUID}</body>
+    </attribute>
+    <attribute name="${attribute.name}" access="rw" foreach="attribute" condition="${model.property.attribute.database.pk.composite}==true">
+        <datatype>${attribute.type}</datatype>
+        <apicomment>The field ${attribute.name} of ${object.name} is used as composite primary key. The value of ${attribute.name} (${object.name}.${attribute.name}) is saved in this field.</apicomment>
+    </attribute>
+    <attribute name="${reference.name}" access="rw" foreach="reference" condition="${model.property.reference.database.pk.composite}==true">
+        <datatype>Long</datatype>
+        <apicomment>The foreign key ${reference.name} of ${object.name} is used as composite primary key. The id of the ${reference.name} (${object.name}.${reference.name}) it references is saved in this field.</apicomment>
+    </attribute>
+    <operation name="equals">
+      <parameter name="return">
+        <datatype>boolean</datatype>
+      </parameter>
+      <parameter name="other">
+        <datatype>Object</datatype>
+      </parameter>
+      <body>${fmsnippet.java.pojo.jpa2.compositepk.equals}</body>
+    </operation>
+    <operation name="hashCode">
+      <parameter name="return">
+        <datatype>integer</datatype>
+      </parameter>
+      <body>${fmsnippet.java.pojo.jpa2.compositepk.hashcode}</body>
+    </operation>
+    <operation name="toString">
+      <parameter name="return">
+        <datatype>String</datatype>
+      </parameter>
+      <body>${fmsnippet.java.pojo.jpa2.compositepk.tostring}</body>
+    </operation>
+  </class>
+</package>
