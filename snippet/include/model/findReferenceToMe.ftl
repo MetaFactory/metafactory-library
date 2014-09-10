@@ -7,6 +7,8 @@
   referenceToMeNameFU
 
 -->
+<#--stop if $currentModelPackage is null-->
+<#if !(currentModelPackage)??>  ${generator.error("currentModelPackage not found in context")} </#if>
 
 <#--stop if $currentModelObject is null-->
 <#if !(currentModelObject)??>  <#stop "currentModelObject not found in context" ></#if>

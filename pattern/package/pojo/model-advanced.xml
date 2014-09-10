@@ -1,5 +1,5 @@
 <!--
-  A pattern package for creating simple pojo's without equals, hashcode, toString or jpa annotations.
+  A pattern package for creating simple pojo's with equals, hashcode, toString, but without jpa annotations.
 
  -->
 <package xmlns="http://www.firstbase.nl/xsd/personaliom/pattern"
@@ -21,6 +21,7 @@
       <datatype>${attribute.type}</datatype>
       <apicomment>${fmsnippet.java.pojo.attribute.apicomment}</apicomment>
       <body condition="${propertyExists(${model.property.attribute.entity.default.value})}">${model.property.attribute.entity.default.value}</body>
+      <setterBody>${fmsnippet.java.pojo.operation.setter}</setterBody>
     </attribute>
     <attribute name="${reference.name}" foreach="reference" access="rw" condition="${fmsnippet.condition.reference_1_and_enum}">
       <datatype>${pattern.property.model.implementation.reference}</datatype>
@@ -45,6 +46,64 @@
     </operation>
  -->
 
+    <!--
+      explanation of usage of constructor pattern:
+
+      Creates a constructor by using metadata/properties of object, attributes and pattern. Start by defining a property
+      for the model object you want a constructor for:
+
+      <object name="" ...>
+        <properties>
+          ...
+          <createConstructor>YourUniqueKey</createConstructor>
+          ...
+        </properties>
+      ...
+
+      </object>
+
+      Now add the property useInConstructor=YourUniqueKey to the attributes and references which must be used by this
+      constructor. example:
+
+      <object name="" ...>
+        <properties>
+          ...
+          <createConstructor>YourUniqueKey</createConstructor>
+          ...
+        </properties>
+      ...
+        <attribute name="" ...>
+          <properties>
+            ...
+            <useInConstructor>YourUniqueKey</useInConstructor>
+            ...
+          </properties>
+        </attribute>
+
+        ... other attributes...
+
+        <reference name="" ...>
+          <properties>
+            ...
+            <useInConstructor>YourUniqueKey</useInConstructor>
+            ...
+          </properties>
+        </reference>
+
+        ... more references...
+
+      </object>
+     -->
+    <operation name="constructor" visibility="${fmsnippet.attribute.visibility_of_constructor}" foreach="currentModelObject.property.createConstructor" var0="${forEachPropertyValue}">
+      <parameter name="${attribute.name}" foreach="attribute.property.useInConstructor" condition="${forEachPropertyValue}=${var0}">
+        <datatype> ${attribute.type}</datatype>
+      </parameter>
+      <parameter name="${reference.name}" foreach="reference.property.useInConstructor" condition="${forEachPropertyValue}=${var0}">
+        <datatype> ${reference.type}</datatype>
+      </parameter>
+      <body>${fmsnippet.java.pojo.operation.constructor.constructor-use-fields} </body>
+    </operation>
+
     <operation name="addTo${firstUpper(${reference.name})}" foreach="reference" condition="${reference.multiplicity}=0..n OR ${reference.multiplicity}=1..n">
       <parameter name="${firstLower(${reference.name})}">
         <datatype>${pattern.property.model.implementation.reference}</datatype>
@@ -56,6 +115,30 @@
         <datatype>${pattern.property.model.implementation.reference}</datatype>
       </parameter>
       <body>${fmsnippet.java.pojo.operation.deleteFromSet}</body>
+    </operation>
+    <operation name="equals" visibility="public" condition="${model.property.object.enum}!=true">
+      <!--  condition="${model.property.object.enum}!=true" -->
+      <apicomment>FIXME define businesskeys in model</apicomment>
+      <parameter name="return">
+        <datatype>boolean</datatype>
+      </parameter>
+      <parameter name="${firstLower(${object.name})}">
+        <datatype>${pattern.property.model.implementation.class}</datatype>
+      </parameter>
+      <body>${fmsnippet.java.pojo.operation.equals.equals-use-businesskey}</body>
+    </operation>
+    <operation name="hashCode" condition="${model.property.object.enum}!=true">
+      <apicomment>FIXME define businesskeys in model</apicomment>
+      <parameter name="return">
+        <datatype>integer</datatype>
+      </parameter>
+      <body>${fmsnippet.java.pojo.operation.hashcode.hashCode-use-businesskey}</body>
+    </operation>
+    <operation name="toString">
+      <parameter name="return">
+        <datatype>String</datatype>
+      </parameter>
+      <body>${fmsnippet.java.pojo.operation.tostring.toString-use-businesskey}</body>
     </operation>
   </class>
 </package>
