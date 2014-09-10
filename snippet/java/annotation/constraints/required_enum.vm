@@ -1,0 +1,12 @@
+##adds a @NotNull annotation
+##stop if $currentReference is null
+#if(!$currentModelReference)
+  $generator.error("currentModelReference not found in context")
+#end
+##
+#set($reference=$currentModelReference)
+#set($required=$reference.getAttributeValue("notnull"))
+#if($required=="true")
+  $generator.addLibraryToClass("javax.validation.constraints.NotNull")##
+    @NotNull
+#end

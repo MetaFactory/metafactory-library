@@ -1,0 +1,20 @@
+##Create the @Column annotation with all it's possible attributes if applicable
+##stop if $currentReference is null
+#if(!$currentModelReference)
+  $generator.error("currentModelReference not found in context")
+#end
+##
+#set($reference=$currentModelReference)
+#set($required=$reference.getAttributeValue("notnull"))
+#set($immutable=$generator.elementContainsProperty($reference,"immutable","true"))
+#if($required && $required=="true")
+  #set($nullable=false)
+#else
+  #set($nullable=true)
+#end
+@Column(name="${reference.getAttributeValue('name')}"
+#if($immutable)
+  ,updatable=false
+#end
+,nullable=$nullable
+)

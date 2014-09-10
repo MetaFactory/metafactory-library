@@ -1,0 +1,21 @@
+#*
+  Produces a empty string or @Past
+  and adds the library org.hibernate.validator.Past to the current class.
+  This snippet expects to be called in the context of a pattern attribute
+*#
+##stop if $currentModelAttribute is null
+#if(!$currentModelAttribute)
+  $generator.error("currentModelAttribute not found in context")
+#end
+#set($attribute=$currentModelAttribute)
+#set($past="")## set to empty string explicitly, otherwise value is not set to null if nothing found
+#set($past=$generator.getElementProperty(${attribute},"validator.date.past"))
+#if($past == "true")
+  #if($attribute.getAttributeValue("type")!="Date")
+    $generator.error("Invalid validator.date.past property found at attribute $attribute.getAttributeValue('name')")
+  #end
+  $generator.addLibraryToClass("javax.validation.constraints.Past")##
+  @Past
+#end
+##
+

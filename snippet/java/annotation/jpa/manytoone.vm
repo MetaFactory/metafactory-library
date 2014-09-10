@@ -1,0 +1,43 @@
+##Create the @ManyToOne annotation with all it's possible attributes if applicable
+##stop if $currentModelPackage is null
+#if(!$currentModelPackage)
+  $generator.error("currentModelPackage not found in context")
+#end
+##
+##stop if $currentModelObject is null
+#if(!$currentModelObject)
+  $generator.error("currentModelObject not found in context")
+#end
+##stop if $currentModelReference is null
+#if(!$currentModelReference)
+  $generator.error("currentModelReference not found in context")
+#end
+##
+#set($reference=$currentModelReference)
+#set($multiplicity=${reference.getAttributeValue('multiplicity')})
+#if($multiplicity != "0..1" && $multiplicity != "1..1")
+  $generator.error("Invalid multiplicity ($multiplicity) found. Only 0..1 and 1..1 is supported by JoinColumn")
+#end
+#set($modelObjectName=$currentModelObject.getAttributeValue('name'))
+#set($referenceName=$reference.getAttributeValue('name'))
+#set($referenceNameAU=$generator.allUpper($referenceName))
+#set($referenceNameAL=$generator.allLower($referenceName))
+#set($referenceType=$reference.getAttributeValue('type'))
+#set($referenceTypeAU=$generator.allUpper($referenceType))
+#set($referenceTypeAL=$generator.allLower($referenceType))
+#set($referenceObjectElement=$generator.findChildByAttribute($currentModelPackage,"object","name",$referenceType))
+#set($required=$reference.getAttributeValue("notnull"))
+#if($required && $required=="true")
+  #set($optional=false)
+  #if($multiplicity == "0..1")
+    $generator.error("object=${modelObjectName}. reference=${referenceName}. Inconsistent multiplicity ($!multiplicity) and notnull ($!required) attributes found. If multiplicity is 0..1 notnull must be false.")
+  #end
+#else
+  #set($optional=true)
+  #if($multiplicity == "1..1")
+    $generator.error("object=${modelObjectName}. reference=${referenceName}. Inconsistent multiplicity ($!multiplicity) and notnull ($!required) attributes found. If multiplicity is 1..1, notnull must be true.")
+  #end
+#end
+$generator.addLibraryToClass("javax.persistence.ManyToOne")##
+$generator.addLibraryToClass("javax.persistence.CascadeType")##
+@ManyToOne(optional=${optional}, cascade={CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})

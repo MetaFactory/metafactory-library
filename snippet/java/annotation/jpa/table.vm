@@ -1,0 +1,51 @@
+##Create the @Table annotation with all it's possible attributes if applicable
+##stop if $currentModelObject is null
+#if(!$currentModelObject)
+  $generator.error("currentModelObject not found in context")
+#end
+#set($modelobject=$currentModelObject)  ## element of model
+#set($modelObjectName=$modelobject.getAttributeValue("name"))
+#set($modelObjectNameFL=${generator.firstLower(${modelObjectName})})
+@Table(name="${modelObjectName}"
+##Check if object has 1 or more properties defined with name unique.key
+#set($uniqueObjectKeyPropertyElements=$generator.getPropertyElements($modelobject,"unique.key"))
+##Create a new property from the value of this property and get all attributes and references with this new property defined
+#set($uniqueAnnotationCount=0)
+#foreach($uniqueObjectKeyPropertyElement in $uniqueObjectKeyPropertyElements)
+  $generator.addLibraryToClass("javax.persistence.UniqueConstraint")##
+  #set($propertyName="${uniqueObjectKeyPropertyElement.name}.${uniqueObjectKeyPropertyElement.text}")
+  #set($attributes=$generator.findChildrenByProperty(${modelobject},"attribute","$propertyName"))
+  #set($items=$generator.findChildrenByProperty(${modelobject},"reference","$propertyName"))
+  #if($items.addAll($attributes)) ##trick to ignore result of add all
+  #end
+##a attribute has column ${referenceNameAU}_${referenceTypeAU}_ID, but a reference has column ${referenceNameAU}_${referenceTypeAU}_ID
+  #if($uniqueAnnotationCount == 0) , uniqueConstraints= { #end
+  #if($uniqueAnnotationCount > 0) , #end
+  @UniqueConstraint(name="${uniqueObjectKeyPropertyElement.text}", columnNames={
+  #foreach($item in $items)
+    #if($velocityCount>0),#end
+    #if($item.getName()=="attribute")
+      "$item.getAttributeValue('name')"
+    #elseif($item.getName()=="reference")
+      ##TODO check if multilicity is 0..1 or 1..1
+      #set($referenceName=$item.getAttributeValue('name'))
+      #set($referenceType=$item.getAttributeValue('type'))
+      ##Check if it's a enum
+      #set($referenceObjectElement=$generator.findChildByAttribute($currentModelPackage,"object","name",$referenceType))
+      #set($isEnum=$generator.elementContainsProperty($referenceObjectElement,"enum","true"))
+      #if($isEnum)
+        "${referenceName}"
+      #else
+        #set($referenceNameAU=$generator.allUpper($referenceName))
+        #set($referenceTypeAU=$generator.allUpper($referenceType))
+        "${referenceNameAU}_${referenceTypeAU}_ID"
+      #end
+    #else
+      $generator.error("invalid item found for unique property $propertyName in object $modelObjectName")
+    #end
+  #end
+  })
+  #set($uniqueAnnotationCount=$uniqueAnnotationCount+1)
+#end
+#if($uniqueAnnotationCount > 0) } #end
+)

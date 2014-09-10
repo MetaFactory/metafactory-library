@@ -1,0 +1,63 @@
+##create annotation @OneToMany(fetch = FetchType.LAZY, mappedBy = "${firstLower(${object.name})}", cascade = {CascadeType.PERSIST, CascadeType.MERGE}
+##mappedBy is the name of the foreignKey column pointing to us. The name is created in the snippet joinColumn with the expression
+##${referenceNameAU}_${referenceTypeAU}_ID
+##stop if $currentModelObject is null
+#if(!$currentModelObject)
+  $generator.error("currentModelObject not found in context")
+#end
+#if(!$currentModelReference)
+  $generator.error("currentModelReference not found in context")
+#end
+#set($reference=$currentModelReference)
+#set($multiplicity=${reference.getAttributeValue('multiplicity')})
+#if($multiplicity != "0..n" && $multiplicity != "1..n")
+  $generator.error("Invalid multiplicity ($multiplicity) found. Only 0..n and 1..n is supported by OneToMany")
+#end
+#set($referenceType=${reference.getAttributeValue('type')})
+#set($modelObjectName=$currentModelObject.getAttributeValue('name'))
+##Find the 0..1 or 1..1 reference to me
+#set($referenceObjectElement=$generator.findChildByAttribute($currentModelPackage,"object","name",$referenceType))
+##find a reference from this element ($referenceObjectElement) with type modelObjectName
+#set($allReferenceToMeElements=$generator.findChildrenByAttribute($referenceObjectElement,"reference","type",$modelObjectName))
+#set($referenceToMeElements=$generator.createEmptyList())
+##remove references with multiplicity other than 0..1 or 1..1
+#foreach($r in $allReferenceToMeElements)
+  #set($multiplicity=${r.getAttributeValue('multiplicity')})
+  #if($multiplicity == "0..1" || $multiplicity == "1..1")
+    #if($referenceToMeElements.add($r)) ## trick to ignore result of add method
+    #end
+  #end
+#end
+##when multiple references found, generate a error with instruction how to add a property to distinguish these references
+##when no references found genereate a error
+##when only 1 reference found, create the value of the mappedBy attribute and insert the OneToMany annotation
+#if($referenceToMeElements.size()==0)
+  $generator.error("Invalid model: No reference 0..1 or 1..1 of type $modelObjectName found in object with name ${referenceType}.")
+#elseif($referenceToMeElements.size()>1)
+  ##The reference to me can be explicitly set in a property (to remove a ambiguity), so first check if there's a property set
+  #if($generator.elementContainsProperty($reference,"opposite.reference.tome"))
+    #set($referenceToMeProperty=$generator.getElementProperty($reference,"opposite.reference.tome"))
+    #set($referenceToMe=$generator.findChildByAttribute($referenceObjectElement,"reference","name",$referenceToMeProperty))
+    #if(!$referenceToMe)
+      $generator.error("The reference with name $referenceToMeProperty (specified in property opposite.reference.tome) is not found in object $referenceObjectElement.getAttributeValue('name')")
+    #end
+  #else
+    ##No property found, so find the object with name referenceType in currentModelPackage
+    ##Assume the first, but add a property so it's easier to change
+    #set($referenceToMe=$referenceToMeElements.get(0))
+    #set($name=$referenceToMe.getAttributeValue("name"))
+    $generator.addProperty($reference,"opposite.reference.tome",$name)
+    $context.addWarning("ambiguity found: multiple references with type $modelObjectName found in object with name ${referenceType}. Can't determine the mappedBy (name of foreignkey) attribute of the OneToMany annotation => Property added to model with assumption of $name")
+  #end
+#else
+  #set($referenceToMe=$referenceToMeElements.get(0))
+#end
+##
+#set($referenceToMeName=${referenceToMe.getAttributeValue('name')})
+#set($referenceToMeType=${referenceToMe.getAttributeValue('type')})
+#set($referenceToMeNameAU=$generator.allUpper($referenceToMeName))
+#set($referenceToMeTypeAU=$generator.allUpper($referenceToMeType))
+#set($fkName="${referenceToMeNameAU}_${referenceToMeTypeAU}_ID")
+#set($cascadeOnDelete=$generator.getElementProperty($reference,"cascade.delete", "false"))
+##
+@OneToMany(fetch = FetchType.LAZY, mappedBy = "${referenceToMeName}", cascade = {CascadeType.PERSIST, CascadeType.MERGE #if(${cascadeOnDelete}=="true") , CascadeType.REMOVE #end})

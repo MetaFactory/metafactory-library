@@ -1,0 +1,18 @@
+##returns true if current reference is 0..1 or 1..1 and the reference is not a enum
+##stop if $currentModelPackage is null
+#if(!$currentModelPackage)
+  $generator.error("currentModelPackage not found in context")
+#end
+##
+##stop if $currentModelObject is null
+#if(!$currentModelObject)
+  $generator.error("currentModelObject not found in context")
+#end
+##
+#set($compositePk=$generator.elementContainsProperty($currentModelObject,"database.pk.composite", "true"))
+#set($isEnum=$generator.getElementProperty($currentModelObject,"enum", "false"))
+#if($isEnum=="false" && $compositePk)
+  true
+#else
+  false
+#end

@@ -1,0 +1,44 @@
+##Create the @JoinColumn annotation with all it's possible attributes if applicable
+##stop if $currentModelObject is null
+#if(!$currentModelObject)
+  $generator.error("currentModelObject not found in context")
+#end
+##stop if $currentModelReference is null
+#if(!$currentModelReference)
+  $generator.error("currentModelReference not found in context")
+#end
+##
+#set($reference=$currentModelReference)
+#set($multiplicity=${reference.getAttributeValue('multiplicity')})
+#if($multiplicity != "0..1" && $multiplicity != "1..1")
+  $generator.error("Invalid multiplicity ($multiplicity) found. Only 0..1 and 1..1 is supported by JoinColumn")
+#end
+#set($modelObjectName=$currentModelObject.getAttributeValue('name'))
+#set($referenceName=$reference.getAttributeValue('name'))
+#set($referenceNameAU=$generator.allUpper($referenceName))
+#set($referenceType=$reference.getAttributeValue('type'))
+#set($referenceTypeAL=$generator.allLower($referenceType))
+#set($referenceTypeAU=$generator.allUpper($referenceType))
+#set($required=$reference.getAttributeValue("notnull"))
+#set($unique=$generator.elementContainsProperty($reference,"unique","global"))
+#set($immutable=$generator.elementContainsProperty($reference,"immutable","true"))
+#if($required && $required=="true")
+  #set($nullable=false)
+  #if($multiplicity == "0..1")
+    $generator.error("object=${modelObjectName}. reference=${referenceName}. Inconsistent multiplicity ($!multiplicity) and notnull ($!required) attributes found. If multiplicity is 0..1 notnull must be false.")
+  #end
+#else
+  #set($nullable=true)
+  #if($multiplicity == "1..1")
+    $generator.error("object=${modelObjectName}. reference=${referenceName}. Inconsistent multiplicity ($!multiplicity) and notnull ($!required) attributes found. If multiplicity is 1..1, notnull must be true.")
+  #end
+#end
+@JoinColumn(name="${referenceName}_${referenceTypeAL}_id",referencedColumnName="${referenceTypeAL}_id"
+#if($unique)
+  ,unique=true
+#end
+#if($immutable)
+  ,updatable=false
+#end
+,nullable=$nullable
+)
