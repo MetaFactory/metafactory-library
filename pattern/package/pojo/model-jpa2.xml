@@ -24,10 +24,10 @@
       <library>java.io.Serializable</library>
       <library condition="${model.property.object.enum}!=true">javax.persistence.Entity</library>
       <library condition="${model.property.object.enum}!=true">javax.persistence.Table</library>
-      <library condition="${snippet.condition.composite_pk_and_no_enum}">javax.persistence.IdClass</library>
+      <library condition="${fmsnippet.condition.composite_pk_and_no_enum}">javax.persistence.IdClass</library>
     </libraries>
     <annotation condition="${model.property.object.enum}!=true">@Entity</annotation>
-    <annotation condition="${snippet.condition.composite_pk_and_no_enum}">@IdClass(${pattern.property.pk_composite.class}.class)</annotation>
+    <annotation condition="${fmsnippet.condition.composite_pk_and_no_enum}">@IdClass(${pattern.property.pk_composite.class}.class)</annotation>
     <annotation condition="${model.property.object.enum}!=true">${snippet.java.annotation.jpa.table}</annotation>
     <inherits condition="${model.property.object.enum}!=true">BaseModel</inherits>
     <implements>Serializable</implements>
@@ -55,7 +55,7 @@
     met composite primary keys (zie http://www.coderanch.com/t/486475/ORM/java/JPA-composite-primary-key-classes onderaan)
     Ik kies er nu voor om alle velden die in de composite primary key gebruikt worden te voorzien van @Id
 
-    <attribute name="${pattern.property.pk_composite.name}" access="rw" condition="${snippet.condition.composite_pk_and_no_enum}">
+    <attribute name="${pattern.property.pk_composite.name}" access="rw" condition="${fmsnippet.condition.composite_pk_and_no_enum}">
       <library>javax.persistence.EmbeddedId</library>
       <datatype>${pattern.property.pk_composite.class}</datatype>
       <apicomment>composite primary key</apicomment>
@@ -262,7 +262,7 @@
   </class>
 
 
-  <class name="${pattern.property.pk_composite.class}" visibility="public" enum="false" condition="${snippet.condition.composite_pk_and_no_enum}" foreach="object">
+  <class name="${pattern.property.pk_composite.class}" visibility="public" enum="false" condition="${fmsnippet.condition.composite_pk_and_no_enum}" foreach="object">
     <apicomment>Composite primary key class used for entity ${object.name}</apicomment>
     <libraries>
         <library>java.io.Serializable</library>
