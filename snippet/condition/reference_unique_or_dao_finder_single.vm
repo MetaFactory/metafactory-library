@@ -1,0 +1,29 @@
+##snippet which controls creation of a finder by using a reference which returns a single result
+##when the reference has property unique=global true is returned
+##when the reference has property dao.finder.single=true true is returned
+##otherwise false
+##stop if $currentModelObject is null
+#if(!$currentModelObject)
+  $generator.error("currentModelObject not found in context")
+#end
+##
+##stop if $currentReference is null
+#if(!$currentModelReference)
+  $generator.error("currentModelReference not found in context")
+#end
+##
+#set($modelobject=$currentModelObject)  ## element of model
+#set($modelObjectName=$modelobject.getAttributeValue("name"))
+##
+#set($reference=$currentModelReference)
+#set($referenceName=$reference.getAttributeValue("name"))
+#set($multiplicity=$reference.getAttributeValue("multiplicity"))
+##
+#set($isUnique=$generator.elementContainsProperty($reference,"unique","global"))
+#set($daoFinderSingle=$generator.elementContainsProperty($reference,"dao.finder.single","true"))
+#if($isUnique) true
+#elseif($daoFinderSingle) true
+#else false #end
+#if(($multiplicity=="0..n" || $multiplicity=="1..n") && ($isUnique || $daoFinderSingle))
+  $generator.error("Don't know how to create a finder which returns a singleResult for reference $referenceName of multiplicity $multiplicity of object $modelObjectName")
+#end

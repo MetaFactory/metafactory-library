@@ -1,0 +1,455 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<package  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.firstbase.nl/xsd/personaliom/pattern"
+          xsi:schemaLocation="http://www.firstbase.nl/xsd/personaliom/pattern http://www.firstbase.nl/xsd/personaliom/pattern.xsd"
+          name="${pattern.property.cdi.dao.package}"
+          path="${pattern.property.java.main.directory}"
+          package="domain_model">
+  <class name="${pattern.property.product.keyword}RootBean" visibility="public" abstract="true">
+    <generic>T</generic>
+    <attribute name="persistentClass" visibility="private" access="rw">
+        <datatype><![CDATA[Class<T>]]></datatype>
+    </attribute>
+<!--
+    <attribute name="em" visibility="protected" access="ro">
+        <library>javax.persistence.EntityManager</library>
+        <library>javax.inject.Inject</library>
+        <datatype>EntityManager</datatype>
+        <apicomment>Seam Managed Entity Manager</apicomment>
+        <annotation>@Inject</annotation>
+    </attribute>
+ -->
+    <attribute name="maxResults" access="rw" visibility="private">
+        <datatype>int</datatype>
+        <body>100</body>
+    </attribute>
+    <operation name="getEm" abstract="true" visibility="public">
+      <library>javax.persistence.EntityManager</library>
+      <parameter name="return"><datatype>EntityManager</datatype></parameter>
+    </operation>
+    <operation name="get" visibility="public">
+      <apicomment>Finds entity by using it's primary key (Long)</apicomment>
+      <parameter name="return">
+        <datatype>T</datatype>
+      </parameter>
+      <parameter name="id">
+        <datatype>Long</datatype>
+      </parameter>
+      <body><![CDATA[
+    T entity;
+
+    entity = (T) getEm().find(this.persistentClass, id);
+
+    return entity;
+      ]]></body>
+    </operation>
+    <operation name="save" visibility="public">
+      <apicomment>Generic save method</apicomment>
+      <parameter name="return">
+        <datatype>T</datatype>
+      </parameter>
+      <parameter name="entity">
+        <datatype>T</datatype>
+      </parameter>
+      <body><![CDATA[
+        getEm().persist(entity);
+        return entity;
+      ]]></body>
+    </operation>
+    <operation name="delete" visibility="public">
+      <apicomment>Generic delete method</apicomment>
+      <parameter name="return">
+        <datatype>void</datatype>
+      </parameter>
+      <parameter name="entity">
+        <datatype>T</datatype>
+      </parameter>
+      <body>getEm().remove(entity);</body>
+    </operation>
+    <operation name="getAll" visibility="public">
+      <library>java.util.List</library>
+      <library>javax.persistence.TypedQuery</library>
+      <library>javax.persistence.criteria.CriteriaBuilder</library>
+      <library>javax.persistence.criteria.CriteriaQuery</library>
+      <library>javax.persistence.criteria.Root</library>
+      <library>javax.persistence.metamodel.EntityType</library>
+      <library>javax.persistence.metamodel.Metamodel</library>
+      <apicomment>Generic finder</apicomment>
+      <parameter name="return">
+        <datatype><![CDATA[List<T>]]></datatype>
+      </parameter>
+      <body><![CDATA[
+        CriteriaBuilder cb  = getEm().getCriteriaBuilder();
+        CriteriaQuery<T> cqry = cb.createQuery(persistentClass);
+
+        Metamodel m = getEm().getMetamodel();
+        EntityType<T> et_ = m.entity(persistentClass);
+
+        Root<T> root = cqry.from(et_);
+
+        cqry.select(root);
+
+        TypedQuery<T> q = getEm().createQuery(cqry);
+        q.setMaxResults(maxResults);
+        List<T> result = q.getResultList();
+
+        return result;
+      ]]></body>
+    </operation>
+    <operation name="merge" visibility="public">
+        <parameter name="return"><datatype>T</datatype></parameter>
+        <parameter name="entity"><datatype>T</datatype></parameter>
+        <body>
+        return getEm().merge(entity);
+        </body>
+    </operation>
+  </class>
+  <class name="${object.name}DaoBean" visibility="public" abstract="true" foreach="object" condition="${model.property.object.enum}!=true">
+    <libraries>
+        <library>java.io.Serializable</library>
+        <library>${pattern.property.model.implementation.package}.${pattern.property.model.implementation.class}</library>
+    </libraries>
+<!--
+        <library>javax.enterprise.inject.Model</library>
+    <annotation>@Model</annotation>
+ -->
+    <inherits><![CDATA[${pattern.property.product.keyword}RootBean<${pattern.property.model.implementation.class}>]]></inherits>
+    <implements>Serializable</implements>
+    <attribute name="LOG" visibility="private" static="true" final="true">
+      <library>org.slf4j.Logger</library>
+      <library>org.slf4j.LoggerFactory</library>
+      <datatype>Logger</datatype>
+      <body>LoggerFactory.getLogger(${generated.class.name}.class.getName())</body>
+    </attribute>
+
+    <attribute name="serialVersionUID" visibility="private" static="true" final="true">
+      <datatype>long</datatype>
+      <body>1L</body>
+    </attribute>
+    <attribute name="em" visibility="protected" access="ro">
+        <library>javax.persistence.EntityManager</library>
+        <library>javax.inject.Inject</library>
+        <datatype>EntityManager</datatype>
+        <apicomment>The Entity Manager</apicomment>
+        <annotation>@Inject</annotation>
+    </attribute>
+
+<!-- There are different ways to deal with the entitymanager
+    <attribute name="em" visibility="protected" access="rw">
+        <library>javax.persistence.EntityManager</library>
+        <datatype>EntityManager</datatype>
+        <apicomment>Application Managed Entity Manager</apicomment>
+    </attribute>
+ -->
+
+    <attribute name="identity" access="rw" condition="${model.property.object.audit.create}=true OR ${model.property.object.audit.modify}=true">
+      <library>javax.inject.Inject</library>
+      <library>org.picketlink.Identity</library>
+      <datatype>Identity</datatype>
+      <annotation>@Inject</annotation>
+    </attribute>
+
+    <operation name="setPersistentClass">
+        <library>javax.annotation.PostConstruct</library>
+        <annotation>@PostConstruct</annotation>
+        <body>
+        super.setPersistentClass(${pattern.property.model.implementation.class}.class);
+        </body>
+    </operation>
+    <operation name="save" visibility="public" condition="${model.property.object.audit.create}=true">
+      <library>java.util.Date</library>
+      <apicomment>Generic save method</apicomment>
+      <parameter name="return">
+        <datatype>${pattern.property.model.implementation.class}</datatype>
+      </parameter>
+      <parameter name="entity">
+        <datatype>${pattern.property.model.implementation.class}</datatype>
+      </parameter>
+      <body><![CDATA[
+        Date created = new Date();
+        String creator = identity.getAccount().getId();
+        entity.setCreated(created);
+        entity.setCreator(creator);
+        entity.setModified(created);
+        entity.setModifier(creator);
+
+        return super.save(entity);
+      ]]></body>
+    </operation>
+    <operation name="update" visibility="public" condition="${model.property.object.audit.modify}!=true">
+      <apicomment>Update method</apicomment>
+      <parameter name="return">
+        <datatype>${pattern.property.model.implementation.class}</datatype>
+      </parameter>
+      <parameter name="entity">
+        <datatype>${pattern.property.model.implementation.class}</datatype>
+      </parameter>
+      <body>return super.save(entity);</body>
+    </operation>
+    <operation name="update" visibility="public" condition="${model.property.object.audit.modify}=true">
+      <library>java.util.Date</library>
+      <apicomment>Update method</apicomment>
+      <parameter name="return">
+        <datatype>${pattern.property.model.implementation.class}</datatype>
+      </parameter>
+      <parameter name="entity">
+        <datatype>${pattern.property.model.implementation.class}</datatype>
+      </parameter>
+      <body><![CDATA[
+        Date modified = new Date();
+        String modifier = identity.getAccount().getId();
+        entity.setModified(modified);
+        entity.setModifier(modifier);
+
+        return super.save(entity);
+      ]]></body>
+    </operation>
+
+    <!-- Create finders for all unique (global) attributes or attributes with property dao.finder.single=true -->
+    <operation name="find${object.name}By${firstUpper(${attribute.name})}" foreach="attribute" condition="${snippet.condition.attribute_unique_or_dao_finder_single}" static="false">
+        <library>javax.persistence.TypedQuery</library>
+        <library>javax.persistence.criteria.CriteriaBuilder</library>
+        <library>javax.persistence.criteria.CriteriaQuery</library>
+        <library>javax.persistence.criteria.Root</library>
+        <library>javax.persistence.NoResultException</library>
+        <library>${pattern.property.model.implementation.package}.${pattern.property.model.implementation.class}</library>
+        <library>${pattern.property.model.implementation.package}.${pattern.property.model.implementation.class}_</library>
+      <parameter name="${attribute.name}">
+        <datatype>${attribute.type}</datatype>
+      </parameter>
+      <parameter name="return">
+        <datatype>${pattern.property.model.implementation.class}</datatype>
+      </parameter>
+      <body>
+        <![CDATA[
+        CriteriaBuilder cb = getEm().getCriteriaBuilder();
+        CriteriaQuery<${pattern.property.model.implementation.class}> cqry = cb.createQuery(${pattern.property.model.implementation.class}.class);
+
+        Root<${pattern.property.model.implementation.class}> from${pattern.property.model.implementation.class} = cqry.from(${pattern.property.model.implementation.class}.class);
+
+        cqry.where(cb.equal(from${pattern.property.model.implementation.class}.get(${pattern.property.model.implementation.class}_.${attribute.name}), ${attribute.name}));
+        cqry.select(from${pattern.property.model.implementation.class});
+
+        TypedQuery<${pattern.property.model.implementation.class}> q = getEm().createQuery(cqry);
+        ${pattern.property.model.implementation.class} result;
+        try
+        {
+          result = q.getSingleResult();
+        }
+        catch (NoResultException nre)
+        {
+          result = null;
+        }
+
+        return result;
+
+        ]]>
+      </body>
+    </operation>
+
+    <!-- Create finders for all attributes with property dao.finder.list=true -->
+    <operation name="find${model.property.object.name.plural}By${firstUpper(${attribute.name})}" foreach="attribute" condition="${model.property.attribute.dao.finder.list}==true" static="false">
+      <library>java.util.List</library>
+      <library>javax.persistence.TypedQuery</library>
+      <library>javax.persistence.criteria.CriteriaBuilder</library>
+      <library>javax.persistence.criteria.CriteriaQuery</library>
+      <library>javax.persistence.criteria.Root</library>
+      <library>${pattern.property.model.implementation.package}.${pattern.property.model.implementation.class}</library>
+      <library>${pattern.property.model.implementation.package}.${pattern.property.model.implementation.class}_</library>
+      <parameter name="${attribute.name}">
+        <datatype>${attribute.type}</datatype>
+      </parameter>
+      <parameter name="return">
+        <datatype><![CDATA[List<${pattern.property.model.implementation.class}>]]></datatype>
+      </parameter>
+      <body>
+        <![CDATA[
+        CriteriaBuilder cb = getEm().getCriteriaBuilder();
+        CriteriaQuery<${pattern.property.model.implementation.class}> cqry = cb.createQuery(${pattern.property.model.implementation.class}.class);
+
+        Root<${pattern.property.model.implementation.class}> ${firstLower(${pattern.property.model.implementation.class})} = cqry.from(${pattern.property.model.implementation.class}.class);
+
+        cqry.where(cb.equal(${firstLower(${pattern.property.model.implementation.class})}.get(${pattern.property.model.implementation.class}_.${attribute.name}), ${attribute.name}));
+        cqry.select(${firstLower(${pattern.property.model.implementation.class})});
+
+        TypedQuery<${pattern.property.model.implementation.class}> q = getEm().createQuery(cqry);
+        List<${pattern.property.model.implementation.class}> result = q.getResultList();
+
+        return result;
+
+        ]]>
+      </body>
+    </operation>
+    <!-- Create finders for all unique (global) references or references with property dao.finder.single=true -->
+    <operation name="find${object.name}By${firstUpper(${reference.name})}" foreach="reference" condition="${snippet.condition.reference_unique_or_dao_finder_single}" static="false">
+        <library>javax.persistence.NoResultException</library>
+        <library>javax.persistence.TypedQuery</library>
+        <library>javax.persistence.criteria.CriteriaBuilder</library>
+        <library>javax.persistence.criteria.CriteriaQuery</library>
+        <library>javax.persistence.criteria.Root</library>
+        <library>${pattern.property.model.implementation.package}.${pattern.property.model.implementation.class}</library>
+        <library>${pattern.property.model.implementation.package}.${pattern.property.model.implementation.reference}</library>
+        <library>${pattern.property.model.implementation.package}.${pattern.property.model.implementation.class}_</library>
+      <parameter name="${reference.name}">
+        <datatype>${reference.type}</datatype>
+      </parameter>
+      <parameter name="return">
+        <datatype>${pattern.property.model.implementation.class}</datatype>
+      </parameter>
+      <body>
+        <![CDATA[
+        CriteriaBuilder cb = getEm().getCriteriaBuilder();
+        CriteriaQuery<${pattern.property.model.implementation.class}> cqry = cb.createQuery(${pattern.property.model.implementation.class}.class);
+
+        Root<${pattern.property.model.implementation.class}> from${pattern.property.model.implementation.class} = cqry.from(${pattern.property.model.implementation.class}.class);
+
+        cqry.where(cb.equal(from${pattern.property.model.implementation.class}.get(${pattern.property.model.implementation.class}_.${reference.name}), ${reference.name}));
+        cqry.select(from${pattern.property.model.implementation.class});
+
+        TypedQuery<${pattern.property.model.implementation.class}> q = getEm().createQuery(cqry);
+        ${pattern.property.model.implementation.class} result;
+        try
+        {
+          result = q.getSingleResult();
+        }
+        catch (NoResultException nre)
+        {
+          result = null;
+        }
+
+        return result;
+
+        ]]>
+      </body>
+    </operation>
+
+    <!-- Create finders for all references with property dao.finder.list=true -->
+    <operation name="find${model.property.object.name.plural}By${firstUpper(${reference.name})}" foreach="reference" condition="${model.property.reference.dao.finder.list}==true" static="false">
+      <library>java.util.List</library>
+      <library>${pattern.property.model.implementation.package}.${pattern.property.model.implementation.class}</library>
+      <library>${pattern.property.model.implementation.package}.${pattern.property.model.implementation.class}_</library>
+      <library>${pattern.property.model.implementation.package}.${pattern.property.model.implementation.reference}</library>
+      <parameter name="return">
+        <datatype><![CDATA[List<${pattern.property.model.implementation.class}>]]></datatype>
+      </parameter>
+      <parameter name="${reference.name}">
+        <datatype>${pattern.property.model.implementation.reference}</datatype>
+      </parameter>
+      <body>${fmsnippet.java.jpa2.findPluralByReference}</body>
+    </operation>
+
+    <!-- Create finders which uses multiple fields and return a single object -->
+    <operation name="find${object.name}By${forEachPropertyValue}" visibility="public" foreach="currentModelObject.property.dao.finder.single.key" var0="${forEachPropertyValue}">
+      <library>${pattern.property.model.implementation.package}.${pattern.property.model.implementation.class}</library>
+      <parameter name="return">
+        <datatype>${pattern.property.model.implementation.class}</datatype>
+      </parameter>
+        <parameter name="${attribute.name}" foreach="attribute.property.dao.finder.single.key.${var0}" var1="${forEachPropertyValue}">
+            <datatype>${attribute.type}</datatype>
+        </parameter>
+        <parameter name="${reference.name}" foreach="reference.property.dao.finder.single.key.${var0}" var1="${forEachPropertyValue}">
+            <datatype>${pattern.property.model.implementation.reference}</datatype>
+        </parameter>
+        <body>${fmsnippet.java.jpa2.findObjectByFields}</body>
+    </operation>
+
+    <!-- Create finders which uses multiple fields and return a list -->
+    <operation name="find${model.property.object.name.plural}By${forEachPropertyValue}" visibility="public" foreach="currentModelObject.property.dao.finder.list.key" var0="${forEachPropertyValue}">
+      <library>java.util.List</library>
+      <library>${pattern.property.model.implementation.package}.${pattern.property.model.implementation.class}</library>
+      <parameter name="return">
+        <datatype><![CDATA[List<${pattern.property.model.implementation.class}>]]></datatype>
+      </parameter>
+        <parameter name="${attribute.name}" foreach="attribute.property.dao.finder.list.key.${var0}" var1="${forEachPropertyValue}">
+            <datatype>${attribute.type}</datatype>
+        </parameter>
+        <parameter name="${reference.name}" foreach="reference.property.dao.finder.list.key.${var0}" var1="${forEachPropertyValue}">
+            <datatype>${pattern.property.model.implementation.reference}</datatype>
+        </parameter>
+        <body>${fmsnippet.java.jpa2.findPluralByFields}</body>
+    </operation>
+
+    <operation name="load${forEachPropertyValue}" visibility="public" foreach="currentModelObject.property.lazydatamodel" var0="${forEachPropertyValue}">
+        <library>java.util.List</library>
+        <library>java.util.Map</library>
+        <library>${pattern.property.model.implementation.package}.${pattern.property.model.implementation.class}</library>
+        <parameter name="return"><datatype><![CDATA[List<${pattern.property.model.implementation.class}>]]></datatype></parameter>
+        <parameter name="first"><datatype>int</datatype></parameter>
+        <parameter name="pageSize"><datatype>int</datatype></parameter>
+        <parameter name="sortField"><datatype>String</datatype></parameter>
+        <parameter name="sortOrder"><datatype>Boolean</datatype></parameter>
+        <parameter name="filters"><datatype><![CDATA[Map<String, String>]]></datatype></parameter>
+        <parameter name="${attribute.name}" foreach="attribute.property.lazydatamodel.${var0}.parameter" var1="${forEachPropertyValue}">
+            <datatype>${attribute.type}</datatype>
+        </parameter>
+        <parameter name="${reference.name}" foreach="reference.property.lazydatamodel.${var0}.parameter" var1="${forEachPropertyValue}">
+            <datatype>${pattern.property.model.implementation.reference}</datatype>
+        </parameter>
+        <body>${fmsnippet.java.cdi.beans.load}</body>
+    </operation>
+    <operation name="get${forEachPropertyValue}ResultCount" visibility="public" foreach="currentModelObject.property.lazydatamodel" var0="${forEachPropertyValue}">
+        <library>java.util.List</library>
+        <library>java.util.Map</library>
+        <library>${pattern.property.model.implementation.package}.${pattern.property.model.implementation.class}</library>
+        <parameter name="return"><datatype>Long</datatype></parameter>
+        <parameter name="filters"><datatype><![CDATA[Map<String, String>]]></datatype></parameter>
+        <parameter name="${attribute.name}" foreach="attribute.property.lazydatamodel.${var0}.parameter" var1="${forEachPropertyValue}">
+            <datatype>${attribute.type}</datatype>
+        </parameter>
+        <parameter name="${reference.name}" foreach="reference.property.lazydatamodel.${var0}.parameter" var1="${forEachPropertyValue}">
+            <datatype>${pattern.property.model.implementation.reference}</datatype>
+        </parameter>
+        <body>${fmsnippet.java.cdi.beans.getResultCount}</body>
+    </operation>
+    <operation name="applyFiltersFor${forEachPropertyValue}" visibility="private" foreach="currentModelObject.property.lazydatamodel" var0="${forEachPropertyValue}">
+      <library>javax.persistence.criteria.Predicate</library>
+      <library>javax.persistence.criteria.Root</library>
+      <library>javax.persistence.criteria.CriteriaBuilder</library>
+      <parameter name="return"><datatype>Predicate</datatype></parameter>
+      <parameter name="filters"><datatype><![CDATA[Map<String, String>]]></datatype></parameter>
+      <parameter name="cb"><datatype>CriteriaBuilder</datatype></parameter>
+      <parameter name="from${object.name}"><datatype><![CDATA[Root<${pattern.property.model.implementation.class}>]]></datatype></parameter>
+      <body>${fmsnippet.java.cdi.beans.applyFilters}</body>
+    </operation>
+    <operation name="fill${firstUpper(${reference.name})}ComboForAdd" foreach="reference" condition="${fmsnippet.condition.reference_1_no_enum}">
+      <library>java.util.List</library>
+      <library>${genpack}.model.implementation.${reference.type}</library>
+      <parameter name="return">
+        <datatype>
+          <![CDATA[List<${reference.type}>]]>
+        </datatype>
+      </parameter>
+      <parameter name="contextForAdd">
+        <datatype>${pattern.property.model.implementation.class}</datatype>
+      </parameter>
+      <body>${fmsnippet.java.jpa2.fillReferenceTypeComboForAdd}</body>
+    </operation>
+    <operation name="fill${firstUpper(${reference.name})}ComboForEdit" foreach="reference" condition="${fmsnippet.condition.reference_1_no_enum}">
+      <library>java.util.List</library>
+      <library>${genpack}.model.implementation.${reference.type}</library>
+      <parameter name="return">
+        <datatype>
+          <![CDATA[List<${reference.type}>]]>
+        </datatype>
+      </parameter>
+      <parameter name="contextForEdit">
+        <datatype>${pattern.property.model.implementation.class}</datatype>
+      </parameter>
+      <body>${fmsnippet.java.jpa2.fillReferenceTypeComboForEdit}</body>
+    </operation>
+    <operation name="fill${firstUpper(${reference.name})}ComboForSearch" foreach="reference" condition="${fmsnippet.condition.reference_1_no_enum}">
+      <library>java.util.List</library>
+      <library>${genpack}.model.implementation.${reference.type}</library>
+      <library>${pattern.property.model.implementation.package}.${pattern.property.model.implementation.class}</library>
+      <parameter name="return">
+        <datatype>
+          <![CDATA[List<${reference.type}>]]>
+        </datatype>
+      </parameter>
+      <parameter name="contextForSearch">
+        <datatype>${pattern.property.model.implementation.class}</datatype>
+      </parameter>
+      <body>${fmsnippet.java.jpa2.fillReferenceTypeComboForSearch}</body>
+    </operation>
+  </class>
+</package>

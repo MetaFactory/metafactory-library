@@ -1,0 +1,23 @@
+##snippet which controls creation of a finder by using a attribute which returns a single result
+##when the attribute has property unique=global true is returned
+##when the attribute has property dao.finder.single=true true is returned
+##otherwise false
+##stop if $currentModelObject is null
+#if(!$currentModelObject)
+  $generator.error("currentModelObject not found in context")
+#end
+##
+##stop if $currentModelAttribute is null
+#if(!$currentModelAttribute)
+  $generator.error("currentModelAttribute not found in context")
+#end
+##
+#set($attribute=$currentModelAttribute)
+#set($attributeName=$attribute.getAttributeValue("name"))
+#set($attributeType=$attribute.getAttributeValue("type"))
+#set($attributeNameFU=${generator.firstUpper(${attributeName})})
+#set($isUnique=$generator.elementContainsProperty($attribute,"unique","global"))
+#set($daoFinderSingle=$generator.elementContainsProperty($attribute,"dao.finder.single","true"))
+#if($isUnique) true
+#elseif($daoFinderSingle) true
+#else false #end
