@@ -369,6 +369,8 @@
         <body>${fmsnippet.java.jpa2.findPluralByFields}</body>
     </operation>
 
+
+<!--
     <operation name="load${forEachPropertyValue}" visibility="public" foreach="currentModelObject.property.lazydatamodel" var0="${forEachPropertyValue}">
         <library>java.util.List</library>
         <library>java.util.Map</library>
@@ -411,6 +413,8 @@
       <parameter name="from${object.name}"><datatype><![CDATA[Root<${pattern.property.model.implementation.class}>]]></datatype></parameter>
       <body>${fmsnippet.java.cdi.beans.applyFilters}</body>
     </operation>
+ -->
+
     <operation name="fill${firstUpper(${reference.name})}ComboForAdd" foreach="reference" condition="${fmsnippet.condition.reference_1_no_enum}">
       <library>java.util.List</library>
       <library>${genpack}.model.implementation.${reference.type}</library>
