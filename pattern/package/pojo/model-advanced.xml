@@ -138,7 +138,10 @@
       <parameter name="return">
         <datatype>String</datatype>
       </parameter>
+      <!--
       <body>${fmsnippet.java.pojo.operation.tostring.toString-use-businesskey}</body>
+       -->
+      <body>${fmsnippet.java.pojo.operation.tostring.toString-use-all-attributes}</body>
     </operation>
   </class>
 </package>
