@@ -259,6 +259,7 @@
       <apicomment>load default values of some fields</apicomment>
       <body>${fmsnippet.java.pojo.operation.loadDefaults}</body>
     </operation>
+
   </class>
 
 
