@@ -280,6 +280,7 @@
         ]]>
       </body>
     </operation>
+
     <!-- Create finders for all unique (global) references or references with property dao.finder.single=true -->
     <operation name="find${object.name}By${firstUpper(${reference.name})}" foreach="reference" condition="${snippet.condition.reference_unique_or_dao_finder_single}" static="false">
         <library>javax.persistence.NoResultException</library>
@@ -348,6 +349,7 @@
             <datatype>${attribute.type}</datatype>
         </parameter>
         <parameter name="${reference.name}" foreach="reference.property.dao.finder.single.key.${var0}" var1="${forEachPropertyValue}">
+            <library>${pattern.property.model.implementation.package}.${pattern.property.model.implementation.reference}</library>
             <datatype>${pattern.property.model.implementation.reference}</datatype>
         </parameter>
         <body>${fmsnippet.java.jpa2.findObjectByFields}</body>
@@ -364,6 +366,7 @@
             <datatype>${attribute.type}</datatype>
         </parameter>
         <parameter name="${reference.name}" foreach="reference.property.dao.finder.list.key.${var0}" var1="${forEachPropertyValue}">
+            <library>${pattern.property.model.implementation.package}.${pattern.property.model.implementation.reference}</library>
             <datatype>${pattern.property.model.implementation.reference}</datatype>
         </parameter>
         <body>${fmsnippet.java.jpa2.findPluralByFields}</body>
@@ -415,7 +418,7 @@
     </operation>
  -->
 
-    <operation name="fill${firstUpper(${reference.name})}ComboForAdd" foreach="reference" condition="${fmsnippet.condition.reference_1_no_enum}">
+    <operation name="fill${firstUpper(${reference.name})}ComboForAdd" foreach="reference" condition="${fmsnippet.condition.reference_1_no_enum} AND ${pattern.property.create.combo.fill}==true">
       <library>java.util.List</library>
       <library>${genpack}.model.implementation.${reference.type}</library>
       <parameter name="return">
@@ -428,7 +431,7 @@
       </parameter>
       <body>${fmsnippet.java.jpa2.fillReferenceTypeComboForAdd}</body>
     </operation>
-    <operation name="fill${firstUpper(${reference.name})}ComboForEdit" foreach="reference" condition="${fmsnippet.condition.reference_1_no_enum}">
+    <operation name="fill${firstUpper(${reference.name})}ComboForEdit" foreach="reference" condition="${fmsnippet.condition.reference_1_no_enum} AND ${pattern.property.create.combo.fill}==true">
       <library>java.util.List</library>
       <library>${genpack}.model.implementation.${reference.type}</library>
       <parameter name="return">
@@ -441,7 +444,7 @@
       </parameter>
       <body>${fmsnippet.java.jpa2.fillReferenceTypeComboForEdit}</body>
     </operation>
-    <operation name="fill${firstUpper(${reference.name})}ComboForSearch" foreach="reference" condition="${fmsnippet.condition.reference_1_no_enum}">
+    <operation name="fill${firstUpper(${reference.name})}ComboForSearch" foreach="reference" condition="${fmsnippet.condition.reference_1_no_enum} AND ${pattern.property.create.combo.fill}==true">
       <library>java.util.List</library>
       <library>${genpack}.model.implementation.${reference.type}</library>
       <library>${pattern.property.model.implementation.package}.${pattern.property.model.implementation.class}</library>
