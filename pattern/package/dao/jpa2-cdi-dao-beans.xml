@@ -104,15 +104,15 @@
         </body>
     </operation>
   </class>
-  <class name="${object.name}DaoBean" visibility="public" abstract="true" foreach="object" condition="${model.property.object.enum}!=true">
+  <class name="${object.name}DaoBean" visibility="public" abstract="false" foreach="object" condition="${model.property.object.enum}!=true">
     <libraries>
         <library>java.io.Serializable</library>
         <library>${pattern.property.model.implementation.package}.${pattern.property.model.implementation.class}</library>
+        <library>javax.enterprise.inject.Model</library>
     </libraries>
 <!--
-        <library>javax.enterprise.inject.Model</library>
-    <annotation>@Model</annotation>
  -->
+    <annotation>@Model</annotation>
     <inherits><![CDATA[${pattern.property.product.keyword}RootBean<${pattern.property.model.implementation.class}>]]></inherits>
     <implements>Serializable</implements>
     <attribute name="LOG" visibility="private" static="true" final="true">
