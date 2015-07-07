@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pattern:xml  xmlns:pattern="http://www.firstbase.nl/xsd/personaliom/pattern"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://www.firstbase.nl/xsd/personaliom/pattern http://www.firstbase.nl/xsd/personaliom/pattern.xsd"
+              __filename="pom.xml"
+              __package="domain_model"
+              __skip="true">
+
+
+  <project  xmlns="http://maven.apache.org/POM/4.0.0"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>${pattern.property.maven.group}</groupId>
+  <artifactId>${pattern.property.maven.artifact.parent}</artifactId>
+  <version>${pattern.property.version}</version>
+  <packaging>pom</packaging>
+  <name>${pattern.property.product.keyword} Parent</name>
+  <url>${pattern.property.product.url}</url>
+
+  <description>Parent project using JEE7.</description>
+  <modules>
+    <module>${pattern.property.maven.module.prefix}${pattern.property.maven.artifact.web}</module>
+  </modules>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.source>1.7</maven.compiler.source>
+    <maven.compiler.target>1.7</maven.compiler.target>
+    <maven.compiler.fork>true</maven.compiler.fork>
+    <version.hibernate>4.3.7.Final</version.hibernate>
+    <version.hibernate.envers>4.3.7.Final</version.hibernate.envers>
+    <version.primefaces>4.0</version.primefaces>
+    <version.primefaces-extensions>2.1.0</version.primefaces-extensions>
+    <version.picketlink.javaee.bom>2.6.1.Final</version.picketlink.javaee.bom>
+    <version.deltaspike>1.4.1</version.deltaspike>
+  </properties>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>javax</groupId>
+        <artifactId>javaee-api</artifactId>
+        <version>7.0</version>
+        <scope>provided</scope>
+      </dependency>
+
+      <!-- Dependencies for all modules -->
+      <dependency>
+        <groupId>${pattern.property.maven.group}</groupId>
+        <artifactId>${pattern.property.maven.artifact.web}</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <!-- Omnifaces -->
+      <dependency>
+        <groupId>org.omnifaces</groupId>
+        <artifactId>omnifaces</artifactId>
+        <version>1.8.1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>1.6.4</version>
+      </dependency>
+      <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-classic</artifactId>
+        <version>1.0.13</version>
+      </dependency>
+
+      <!-- JPA2 with Hibernate. TODO Set same version as in WildFly 8.1 -->
+      <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-core</artifactId>
+        <scope>provided</scope>
+        <version>${version.hibernate}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-entitymanager</artifactId>
+        <version>${version.hibernate}</version>
+      </dependency>
+
+      <!-- Hibernate MetaModel Generator -->
+      <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-jpamodelgen</artifactId>
+        <version>${version.hibernate}</version>
+      </dependency>
+
+      <!-- Bean Validation Implementation -->
+      <!-- Provides portable constraints such as @NotEmpty, @Email and @Url -->
+      <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-validator</artifactId>
+        <version>5.1.0.Final</version>
+      </dependency>
+
+      <!-- Hibernate Envers -->
+      <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-envers</artifactId>
+        <version>${version.hibernate.envers}</version>
+
+      <!-- In JBoss 7.1.1 zit envers-4.0.1.Final => TODO Zoek uit versie in WildFly -->
+      </dependency>
+      <!-- Hibernate Search -->
+      <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-search</artifactId>
+        <version>4.5.1.Final</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-lang3</artifactId>
+        <version>3.1</version>
+      </dependency>
+
+      <!-- PrimeFaces -->
+      <dependency>
+        <groupId>org.primefaces</groupId>
+        <artifactId>primefaces</artifactId>
+        <version>${version.primefaces}</version>
+      </dependency>
+
+      <!-- PrimeFaces required Commons FileUpload -->
+      <dependency>
+        <groupId>commons-fileupload</groupId>
+        <artifactId>commons-fileupload</artifactId>
+        <version>1.3.1</version>
+      </dependency>
+
+      <!-- PrimeFaces Extensions -->
+      <dependency>
+        <groupId>org.primefaces.extensions</groupId>
+        <artifactId>primefaces-extensions</artifactId>
+        <version>${version.primefaces-extensions}</version>
+      </dependency>
+
+      <!-- Onderstaande 2 extensions heb je nodig als je de ckeditor of codemirror wil gebruiken -->
+      <dependency>
+        <groupId>org.primefaces.extensions</groupId>
+        <artifactId>resources-ckeditor</artifactId>
+        <version>${version.primefaces-extensions}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.primefaces.extensions</groupId>
+        <artifactId>resources-codemirror</artifactId>
+        <version>${version.primefaces-extensions}</version>
+      </dependency>
+
+        <!-- Dependency Management for PicketLink and Apache Deltaspike. -->
+        <dependency>
+          <groupId>org.picketlink</groupId>
+          <artifactId>picketlink-javaee-6.0</artifactId>
+          <version>${version.picketlink.javaee.bom}</version>
+          <scope>import</scope>
+          <type>pom</type>
+        </dependency>
+        <dependency>
+          <groupId>joda-time</groupId>
+          <artifactId>joda-time</artifactId>
+          <version>2.4</version>
+        </dependency>
+
+        <!-- DeltaSpike Core Module-->
+        <dependency>
+          <groupId>org.apache.deltaspike.core</groupId>
+          <artifactId>deltaspike-core-api</artifactId>
+          <version>${version.deltaspike}</version>
+          <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+          <groupId>org.apache.deltaspike.core</groupId>
+          <artifactId>deltaspike-core-impl</artifactId>
+          <version>${version.deltaspike}</version>
+          <scope>runtime</scope>
+        </dependency>
+
+        <!-- DeltaSpike Security Module -->
+        <dependency>
+            <groupId>org.apache.deltaspike.modules</groupId>
+            <artifactId>deltaspike-security-module-api</artifactId>
+            <version>${version.deltaspike}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.deltaspike.modules</groupId>
+            <artifactId>deltaspike-security-module-impl</artifactId>
+            <version>${version.deltaspike}</version>
+        </dependency>
+
+        <!-- DeltaSpike JPA Module
+        -->
+        <dependency>
+          <groupId>org.apache.deltaspike.modules</groupId>
+          <artifactId>deltaspike-jpa-module-api</artifactId>
+          <version>${version.deltaspike}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.apache.deltaspike.modules</groupId>
+          <artifactId>deltaspike-jpa-module-impl</artifactId>
+          <version>${version.deltaspike}</version>
+        </dependency>
+
+    </dependencies>
+  </dependencyManagement>
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>3.1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-war-plugin</artifactId>
+          <version>2.5</version>
+        </plugin>
+
+      </plugins>
+    </pluginManagement>
+  </build>
+
+
+  </project>
+
+</pattern:xml>

@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pattern:xml  xmlns:pattern="http://www.firstbase.nl/xsd/personaliom/pattern"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.firstbase.nl/xsd/personaliom/pattern http://www.firstbase.nl/xsd/personaliom/pattern.xsd"
+      __filename="pom.xml"
+      __path="${pattern.property.directory.project.web}"
+      __package="domain_model"
+      __skip="true">
+
+
+  <project  xmlns="http://maven.apache.org/POM/4.0.0"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>${pattern.property.maven.group}</groupId>
+    <artifactId>${pattern.property.maven.artifact.parent}</artifactId>
+    <version>${pattern.property.version}</version>
+  </parent>
+  <artifactId>${pattern.property.maven.artifact.web}</artifactId>
+  <packaging>war</packaging>
+  <name>${pattern.property.product.keyword} Web</name>
+  <dependencies>
+    <dependency>
+      <groupId>javax</groupId>
+      <artifactId>javaee-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- Omnifaces -->
+    <dependency>
+      <groupId>org.omnifaces</groupId>
+      <artifactId>omnifaces</artifactId>
+    </dependency>
+
+    <!-- slf4j API -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+
+    <!-- Logback Classic -->
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.primefaces</groupId>
+      <artifactId>primefaces</artifactId>
+    </dependency>
+
+    <!-- DeltaSpike Core Module-->
+    <dependency>
+      <groupId>org.apache.deltaspike.core</groupId>
+      <artifactId>deltaspike-core-api</artifactId>
+      <scope>compile</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.deltaspike.core</groupId>
+      <artifactId>deltaspike-core-impl</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+
+    <!-- DeltaSpike Security Module -->
+    <dependency>
+      <groupId>org.apache.deltaspike.modules</groupId>
+      <artifactId>deltaspike-security-module-api</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.deltaspike.modules</groupId>
+      <artifactId>deltaspike-security-module-impl</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+
+    <!-- DeltaSpike JPA Module -->
+    <dependency>
+      <groupId>org.apache.deltaspike.modules</groupId>
+      <artifactId>deltaspike-jpa-module-api</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.deltaspike.modules</groupId>
+      <artifactId>deltaspike-jpa-module-impl</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.fitnesse</groupId>
+      <artifactId>fitnesse</artifactId>
+      <version>20140901</version>
+    </dependency>
+  </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>${maven.compiler.source}</source>
+          <target>${maven.compiler.target}</target>
+          <!-- <compilerArgument>-proc:none</compilerArgument> <compilerArgument>-proc:none</compilerArgument> http://docs.jboss.org/hibernate/jpamodelgen/1.0/reference/en-US/html_single/#d0e261 -->
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <configuration>
+          <webappDirectory>${project.build.directory}/${project.build.finalName}-exploded.war</webappDirectory>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  </project>
+
+</pattern:xml>
