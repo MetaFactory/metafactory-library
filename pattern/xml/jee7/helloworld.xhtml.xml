@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pattern:xml  xmlns:pattern="http://www.firstbase.nl/xsd/personaliom/pattern"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://www.firstbase.nl/xsd/personaliom/pattern http://www.firstbase.nl/xsd/personaliom/pattern.xsd"
+              __filename="beans.xml"
+              __skip="true"
+              __root="html"
+              __publicid="-//W3C//DTD XHTML 1.0 Transitional//EN"
+              __systemid="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+  <html lang="en"
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:f="http://java.sun.com/jsf/core"
+        >
+
+      <h:head>
+          <h:outputStylesheet library="css" name="default.css"/>
+          <title>Hello MetaFactory World</title>
+      </h:head>
+      <h:body>
+        <p>Hello MetaFactory World</p>
+        <h:outputText value="#{now}">
+          <f:convertDateTime type="date" pattern="dd-MM-yyyy HH:mm:ss"/>
+        </h:outputText>
+      </h:body>
+  </html>
+</pattern:xml>
