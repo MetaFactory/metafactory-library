@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pattern:xml  xmlns:pattern="http://www.firstbase.nl/xsd/personaliom/pattern"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.firstbase.nl/xsd/personaliom/pattern http://www.firstbase.nl/xsd/personaliom/pattern.xsd"
+  __filename="jboss-web.xml"
+  __skip="true">
+  <jboss-web  xmlns="http://www.jboss.com/xml/ns/javaee"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://www.jboss.com/xml/ns/javaee http://www.jboss.org/j2ee/schema/jboss-web_6_0.xsd"
+              version="6.0">
+    <!--
+    <virtual-host>TODO: create snippet to figure out if virtualhost is required</virtual-host>
+     -->
+    <context-root>${pattern.property.maven.artifact.web}</context-root>
+  </jboss-web>
+</pattern:xml>
