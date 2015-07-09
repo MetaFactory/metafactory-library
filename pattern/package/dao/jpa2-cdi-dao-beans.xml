@@ -119,6 +119,7 @@
       <library>org.slf4j.Logger</library>
       <library>org.slf4j.LoggerFactory</library>
       <datatype>Logger</datatype>
+      <annotation>@SuppressWarnings("unused")</annotation>
       <body>LoggerFactory.getLogger(${generated.class.name}.class.getName())</body>
     </attribute>
 
