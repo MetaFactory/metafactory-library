@@ -12,6 +12,7 @@
         xmlns="http://www.w3.org/1999/xhtml"
         xmlns:h="http://java.sun.com/jsf/html"
         xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:p="http://primefaces.org/ui"
         >
 
       <h:head>
@@ -21,9 +22,12 @@
       <h:body>
         <p>Hello MetaFactory World</p>
         <p>
-          <h:outputText value="#{now}">
-            <f:convertDateTime type="date" pattern="d MMMM yyyy HH:mm:ss"/>
-          </h:outputText>
+          <h:form>
+            <h:outputText value="#{now}" id="txt_time">
+              <f:convertDateTime type="date" pattern="d MMMM yyyy HH:mm:ss"/>
+            </h:outputText>
+            <p:poll interval="1" update="txt_time" />
+          </h:form>
         </p>
       </h:body>
   </html>
