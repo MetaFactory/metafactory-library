@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pattern:xml  xmlns:pattern="http://www.firstbase.nl/xsd/personaliom/pattern"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://www.firstbase.nl/xsd/personaliom/pattern http://www.firstbase.nl/xsd/personaliom/pattern.xsd"
+              __filename="beans.xml"
+              __skip="true"
+              __root="html">
+
+  <html class="no-js"
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:o="http://omnifaces.org/ui"
+        >
+
+      <h:head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="description" content="" />
+        <meta name="author" content="metafactory.nl" />
+        <link rel="shortcut icon" href="#{resource['image:favicon.ico']}" type="image/x-icon" />
+
+        <title>#{pageTitle}</title>
+
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta http-equiv="Expires" content="0" />
+        <meta name="copyright" content="MetaFactory B.V." />
+        <meta name="robots" content="NOINDEX, NOFOLLOW" />
+
+        <ui:remove><!--
+          Deze facetten worden door primefaces verzorgd, maar doen het nu nog niet
+          <f:facet name="first">
+          </f:facet>
+          <f:facet name="last">
+          </f:facet>
+         -->
+        </ui:remove>
+
+          <ui:remove>
+              <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+          </ui:remove>
+
+          <o:conditionalComment if="lt IE 9">
+              <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+              <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+          </o:conditionalComment>
+
+          <![CDATA[
+
+          De omnifaces CDN ResourceHandler is hier niet voor bedoeld. Hij is bedoeld om een
+          resource die je uit een component krijgt (bv jQuery uit een primefaces component)
+          te kunnen omleiden naar een CDN website. De library name moet dan dus al in je
+          applicatie zitten, pas dan doet onderstaande regel het.
+
+          <h:outputStylesheet library="bootstrapcdn" name="bootstrap/3.3.5/css/bootstrap.min.css" />
+          ]]>
+          <!-- Latest compiled and minified CSS -->
+          <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" />
+
+          <h:outputStylesheet library="css" name="default.css"/>
+      </h:head>
+      <h:body>
+         <ui:insert name="header">
+           <ui:include src="/WEB-INF/fragment/header.xhtml" />
+         </ui:insert>
+         <div class="container-fluid">
+           <ui:insert name="content">
+                    [Template content will be inserted here]
+           </ui:insert>
+         </div>
+         <div class="clear" />
+         <ui:insert name="footer">
+           <ui:include src="/WEB-INF/fragment/footer.xhtml" />
+         </ui:insert>
+      </h:body>
+  </html>
+</pattern:xml>

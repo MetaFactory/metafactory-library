@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<package  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.firstbase.nl/xsd/personaliom/pattern"
+          xsi:schemaLocation="http://www.firstbase.nl/xsd/personaliom/pattern http://www.firstbase.nl/xsd/personaliom/pattern.xsd"
+          name="${genpack}.cdi.security"
+          path="${pattern.property.java.main.directory}"
+          >
+
+  <interface name="Admin" annotation="true">
+    <libraries>
+      <library>java.lang.annotation.Documented</library>
+      <library>java.lang.annotation.ElementType</library>
+      <library>java.lang.annotation.Retention</library>
+      <library>java.lang.annotation.RetentionPolicy</library>
+      <library>java.lang.annotation.Target</library>
+      <library>org.apache.deltaspike.security.api.authorization.SecurityBindingType</library>
+    </libraries>
+    <annotation>@Retention(value = RetentionPolicy.RUNTIME)</annotation>
+    <annotation>@Target({ElementType.TYPE, ElementType.METHOD})</annotation>
+    <annotation>@Documented</annotation>
+    <annotation>@SecurityBindingType</annotation>
+  </interface>
+  <class name="${pattern.property.product.keyword}Authorizer" visibility="public">
+    <libraries>
+      <library>javax.enterprise.context.ApplicationScoped</library>
+      <library static="true">org.picketlink.idm.model.basic.BasicModel.hasRole</library>
+      <library static="true">org.picketlink.idm.model.basic.BasicModel.getRole</library>
+    </libraries>
+    <annotation>@ApplicationScoped</annotation>
+    <operation name="doAdminCheck" visibility="public" static="false" abstract="false" final="false">
+      <library>org.apache.deltaspike.security.api.authorization.Secures</library>
+      <library>org.picketlink.idm.RelationshipManager</library>
+      <library>org.picketlink.idm.IdentityManager</library>
+      <library>org.picketlink.Identity</library>
+      <annotation>@Secures</annotation>
+      <annotation>@Admin</annotation>
+      <parameter name="return">
+        <datatype>boolean</datatype>
+      </parameter>
+      <parameter name="identity">
+        <datatype>Identity</datatype>
+      </parameter>
+      <parameter name="identityManager">
+        <datatype>IdentityManager</datatype>
+      </parameter>
+      <parameter name="relationshipManager">
+        <datatype>RelationshipManager</datatype>
+      </parameter>
+      <exception>Exception</exception>
+      <body>return hasRole(relationshipManager,identity.getAccount(),getRole(identityManager,"admin"));</body>
+    </operation>
+  </class>
+  <class name="PicketlinkInitializer" visibility="public">
+    <libraries>
+      <library>javax.ejb.Singleton</library>
+      <library>javax.ejb.Startup</library>
+      <library>org.picketlink.idm.model.basic.User</library>
+      <library>org.picketlink.idm.RelationshipManager</library>
+      <library>org.picketlink.idm.credential.Password</library>
+      <library>org.picketlink.idm.model.basic.Role</library>
+      <library>org.picketlink.idm.IdentityManager</library>
+      <library static="true">org.picketlink.idm.model.basic.BasicModel.grantRole</library>
+    </libraries>
+    <annotation>@Singleton</annotation>
+    <annotation>@Startup</annotation>
+    <attribute name="partitionManager" visibility="private" final="false" static="false" access="none">
+      <library>javax.inject.Inject</library>
+      <library>org.picketlink.idm.PartitionManager</library>
+      <datatype>PartitionManager</datatype>
+      <annotation>@Inject</annotation>
+    </attribute>
+    <operation name="create" visibility="public" static="false" abstract="false" final="false">
+      <library>javax.annotation.PostConstruct</library>
+      <annotation>@PostConstruct</annotation>
+      <parameter name="return">
+        <datatype>void</datatype>
+      </parameter>
+      <body>
+        System.out.println("PicketlinkInitializer.create()");
+
+        User marnix = new User("mvanbochove");
+        marnix.setEmail("vanbochove@firstbase.nl");
+        marnix.setFirstName("Marnix");
+        marnix.setLastName("van Bochove");
+        IdentityManager identityManager = this.partitionManager.createIdentityManager();
+        identityManager.add(marnix);
+        identityManager.updateCredential(marnix, new Password("Marniks_456"));
+
+        Role admin = new Role("admin");
+        identityManager.add(admin);
+
+        RelationshipManager relationshipManager = this.partitionManager.createRelationshipManager();
+
+        grantRole(relationshipManager, marnix, admin);
+
+      </body>
+    </operation>
+  </class>
+</package>
+
+
+
+

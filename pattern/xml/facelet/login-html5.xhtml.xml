@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pattern:xml  xmlns:pattern="http://www.firstbase.nl/xsd/personaliom/pattern"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://www.firstbase.nl/xsd/personaliom/pattern http://www.firstbase.nl/xsd/personaliom/pattern.xsd"
+              __filename="login.xhtml"
+              __skip="true"
+              __root="html">
+
+  <html lang="en"
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+        >
+
+      <h:head>
+          <h:outputStylesheet library="css" name="default.css"/>
+          <title>Login</title>
+      </h:head>
+      <h:body>
+        <section class="loginform cf">
+          <h:form>
+            <ul>
+              <li>
+                <h:outputLabel for="username">Username</h:outputLabel>
+                <h:inputText name="username" value="#{loginCredentials.userId}" pt:placeholder="Username" required="true" />
+              </li>
+              <li>
+                <h:outputLabel for="password">Password</h:outputLabel>
+                <h:inputSecret name="password" value="#{loginCredentials.password}" pt:placeholder="Password" required="true" />
+              </li>
+              <li>
+                <h:commandButton value="Login" action="#{identity.login}" />
+              </li>
+            </ul>
+          </h:form>
+        </section>
+      </h:body>
+  </html>
+</pattern:xml>

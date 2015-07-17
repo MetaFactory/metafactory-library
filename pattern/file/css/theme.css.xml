@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<file xmlns="http://www.firstbase.nl/xsd/personaliom/pattern"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.firstbase.nl/xsd/personaliom/pattern http://www.firstbase.nl/xsd/personaliom/pattern.xsd"
+      name="theme.css"
+      description="The theme.css file for your specific project"
+      trimLeading="true"
+      trimTrailing="true"
+      skip="true">
+  <body>${fmsnippet.file.css.theme}</body>
+</file>

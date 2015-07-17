@@ -2,7 +2,7 @@
 <pattern:xml  xmlns:pattern="http://www.firstbase.nl/xsd/personaliom/pattern"
               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
               xsi:schemaLocation="http://www.firstbase.nl/xsd/personaliom/pattern http://www.firstbase.nl/xsd/personaliom/pattern.xsd"
-              __filename="beans.xml"
+              __filename="index.xhtml"
               __skip="true"
               __root="html"
               __publicid="-//W3C//DTD XHTML 1.0 Transitional//EN"

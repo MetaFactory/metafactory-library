@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<package  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.firstbase.nl/xsd/personaliom/pattern"
+          xsi:schemaLocation="http://www.firstbase.nl/xsd/personaliom/pattern http://www.firstbase.nl/xsd/personaliom/pattern.xsd"
+          name="${genpack}.cdi"
+          path="${pattern.property.java.main.directory}"
+          >
+  <class name="LocaleBean" visibility="public">
+    <libraries>
+      <library>java.io.Serializable</library>
+      <library>java.text.SimpleDateFormat</library>
+      <library>java.util.ArrayList</library>
+      <library>java.util.Iterator</library>
+      <library>java.util.List</library>
+      <library>javax.inject.Named</library>
+      <library>javax.enterprise.context.SessionScoped</library>
+      <library>org.omnifaces.util.Faces</library>
+      <library>org.slf4j.LoggerFactory</library>
+      <library>${genpack}.Constants</library>
+    </libraries>
+    <annotation>@Named</annotation>
+    <annotation>@SessionScoped</annotation>
+    <implements>Serializable</implements>
+    <attribute name="serialVersionUID" visibility="private" final="true" static="true" access="none">
+      <datatype>long</datatype>
+      <body>1L</body>
+    </attribute>
+    <attribute name="LOG" visibility="private" final="true" static="true" access="none">
+      <library>org.slf4j.Logger</library>
+      <datatype>Logger</datatype>
+      <body>LoggerFactory.getLogger(LocaleBean.class.getName())</body>
+    </attribute>
+    <attribute name="availableLocales" visibility="private" final="false" static="false" access="none">
+      <library>java.util.Locale</library>
+      <datatype><![CDATA[List<Locale>]]></datatype>
+    </attribute>
+    <attribute name="currentUserLocale" visibility="private" final="false" static="false" access="none">
+      <library>java.util.Locale</library>
+      <datatype>Locale</datatype>
+    </attribute>
+    <attribute name="dateFormat" visibility="private" final="false" static="false" access="none">
+      <library>java.text.DateFormat</library>
+      <datatype>DateFormat</datatype>
+    </attribute>
+    <attribute name="dateTimeFormat" visibility="private" final="false" static="false" access="none">
+      <library>java.text.DateFormat</library>
+      <datatype>DateFormat</datatype>
+    </attribute>
+    <operation name="initCurrentUserLocale" visibility="public" static="false" abstract="false" final="false">
+      <library>javax.annotation.PostConstruct</library>
+      <annotation>@PostConstruct</annotation>
+      <parameter name="return">
+        <datatype>void</datatype>
+      </parameter>
+      <body><![CDATA[if (availableLocales == null) {
+    initAvailableLocales();
+  }
+  if (currentUserLocale == null) {
+    String localeString=Faces.getRequestCookie(Constants.COOKIE_LOCALE_STRING);
+    if (localeString != null) {
+      int t=0;
+      boolean found=false;
+      Locale availableLocale;
+      while (!found && t < availableLocales.size()) {
+        availableLocale=availableLocales.get(t);
+        if (localeString.equals(availableLocale.toString())) {
+          found=true;
+          currentUserLocale=availableLocale;
+        }
+        t++;
+      }
+      if (!found) {
+        currentUserLocale=Faces.getDefaultLocale();
+      }
+    }
+ else {
+      currentUserLocale=Faces.getDefaultLocale();
+    }
+  }
+  changeFormatters();]]></body>
+    </operation>
+    <operation name="changeFormatters" visibility="private" static="false" abstract="false" final="false">
+      <parameter name="return">
+        <datatype>void</datatype>
+      </parameter>
+      <body>if ("en".equals(currentUserLocale.getLanguage())) {
+    dateFormat=new SimpleDateFormat(Constants.DATE_PATTERN_EN);
+    dateTimeFormat=new SimpleDateFormat(Constants.DATETIME_PATTERN_EN);
+  }
+ else {
+    dateFormat=new SimpleDateFormat(Constants.DATE_PATTERN_NL);
+    dateTimeFormat=new SimpleDateFormat(Constants.DATETIME_PATTERN_NL);
+  }</body>
+    </operation>
+    <operation name="getDefaultLocaleKey" visibility="public" static="false" abstract="false" final="false">
+      <library>javax.enterprise.inject.Produces</library>
+      <annotation>@Produces</annotation>
+      <parameter name="return">
+        <datatype>String</datatype>
+      </parameter>
+      <body>String result;
+  Locale locale=Faces.getDefaultLocale();
+  if (locale != null) {
+    LOG.info("Application uses locale '{}' which is the default locale.",locale);
+    result=locale.toString();
+  }
+ else {
+    LOG.error("Default locale of application not found. Check your faces-config.xml");
+    result="nl";
+  }
+  return result;</body>
+    </operation>
+    <operation name="changeUserLocale" visibility="public" static="false" abstract="false" final="false">
+      <parameter name="return">
+        <datatype>String</datatype>
+      </parameter>
+      <parameter name="newLocaleString">
+        <datatype>String</datatype>
+      </parameter>
+      <body><![CDATA[List<Locale> supportedLocales=Faces.getSupportedLocales();
+  boolean found=false;
+  Iterator<Locale> iterator=supportedLocales.iterator();
+  while (!found && iterator.hasNext()) {
+    Locale locale=iterator.next();
+    if (locale.toString().equals(newLocaleString)) {
+      found=true;
+      currentUserLocale=locale;
+    }
+  }
+  if (!found) {
+    currentUserLocale=Faces.getDefaultLocale();
+    LOG.warn("Failed to find supported locale for {}",newLocaleString);
+  }
+  Faces.setLocale(currentUserLocale);
+  Faces.addResponseCookie(Constants.COOKIE_LOCALE_STRING,currentUserLocale.toString(),7776000);
+  changeFormatters();
+  return "?faces-redirect=true&includeViewParams=true";]]></body>
+    </operation>
+    <operation name="getAvailableLocales" visibility="public" static="false" abstract="false" final="false">
+      <parameter name="return">
+        <datatype><![CDATA[List<java.util.Locale>]]></datatype>
+      </parameter>
+      <body>if (availableLocales == null) {
+    initAvailableLocales();
+  }
+  return availableLocales;</body>
+    </operation>
+    <operation name="initAvailableLocales" visibility="private" static="false" abstract="false" final="false">
+      <parameter name="return">
+        <datatype>void</datatype>
+      </parameter>
+      <body><![CDATA[availableLocales=new ArrayList<Locale>();
+  Iterator<Locale> iter=Faces.getSupportedLocales().iterator();
+  while (iter.hasNext()) {
+    Locale supportedLocale=(Locale)iter.next();
+    availableLocales.add(supportedLocale);
+  }]]></body>
+    </operation>
+    <operation name="getCurrentUserLocale" visibility="public" static="false" abstract="false" final="false">
+      <library>java.util.Locale</library>
+      <parameter name="return">
+        <datatype>Locale</datatype>
+      </parameter>
+      <body>return currentUserLocale;</body>
+    </operation>
+    <operation name="setCurrentUserLocale" visibility="public" static="false" abstract="false" final="false">
+      <library>java.util.Locale</library>
+      <parameter name="return">
+        <datatype>void</datatype>
+      </parameter>
+      <parameter name="currentUserLocale">
+        <datatype>Locale</datatype>
+      </parameter>
+      <body>this.currentUserLocale=currentUserLocale;</body>
+    </operation>
+    <operation name="getDateFormat" visibility="public" static="false" abstract="false" final="false">
+      <library>java.text.DateFormat</library>
+      <parameter name="return">
+        <datatype>DateFormat</datatype>
+      </parameter>
+      <body>return dateFormat;</body>
+    </operation>
+    <operation name="setDateFormat" visibility="public" static="false" abstract="false" final="false">
+      <library>java.text.DateFormat</library>
+      <parameter name="return">
+        <datatype>void</datatype>
+      </parameter>
+      <parameter name="dateFormat">
+        <datatype>DateFormat</datatype>
+      </parameter>
+      <body>this.dateFormat=dateFormat;</body>
+    </operation>
+    <operation name="getDateTimeFormat" visibility="public" static="false" abstract="false" final="false">
+      <library>java.text.DateFormat</library>
+      <parameter name="return">
+        <datatype>DateFormat</datatype>
+      </parameter>
+      <body>return dateTimeFormat;</body>
+    </operation>
+    <operation name="setDateTimeFormat" visibility="public" static="false" abstract="false" final="false">
+      <library>java.text.DateFormat</library>
+      <parameter name="return">
+        <datatype>void</datatype>
+      </parameter>
+      <parameter name="dateTimeFormat">
+        <datatype>DateFormat</datatype>
+      </parameter>
+      <body>this.dateTimeFormat=dateTimeFormat;</body>
+    </operation>
+  </class>
+</package>
+
