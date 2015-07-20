@@ -61,10 +61,13 @@
       <parameter name="return">
         <datatype>void</datatype>
       </parameter>
-      <parameter name="entity">
-        <datatype>T</datatype>
+      <parameter name="id">
+        <datatype>Long</datatype>
       </parameter>
-      <body>getEm().remove(entity);</body>
+      <body>
+        T ref = getEm().getReference(persistentClass, id);
+        getEm().remove(ref);
+      </body>
     </operation>
     <operation name="getAll" visibility="public">
       <library>java.util.List</library>
@@ -119,7 +122,6 @@
       <library>org.slf4j.Logger</library>
       <library>org.slf4j.LoggerFactory</library>
       <datatype>Logger</datatype>
-      <annotation>@SuppressWarnings("unused")</annotation>
       <body>LoggerFactory.getLogger(${generated.class.name}.class.getName())</body>
     </attribute>
 
@@ -185,7 +187,7 @@
       <parameter name="entity">
         <datatype>${pattern.property.model.implementation.class}</datatype>
       </parameter>
-      <body>return super.save(entity);</body>
+      <body>return super.merge(entity);</body>
     </operation>
     <operation name="update" visibility="public" condition="${model.property.object.audit.modify}=true">
       <library>java.util.Date</library>
@@ -202,8 +204,20 @@
         entity.setModified(modified);
         entity.setModifier(modifier);
 
-        return super.save(entity);
+        return super.merge(entity);
       ]]></body>
+    </operation>
+    <operation name="delete" visibility="public">
+      <apicomment>Delete method</apicomment>
+      <parameter name="return">
+        <datatype>void</datatype>
+      </parameter>
+      <parameter name="entity">
+        <datatype>${pattern.property.model.implementation.class}</datatype>
+      </parameter>
+      <body>
+        super.delete(entity.get${firstUpper(${pattern.property.pk})}());
+      </body>
     </operation>
 
     <!-- Create finders for all unique (global) attributes or attributes with property dao.finder.single=true -->
