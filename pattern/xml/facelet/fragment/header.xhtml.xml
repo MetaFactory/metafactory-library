@@ -20,16 +20,12 @@
           <p:toolbarGroup align="left">
             <p:menubar styleClass="ui-widget-header" style="border:0;">
               <p:menuitem value="Home" url="/" icon="ui-icon ui-icon-home" />
-              <p:submenu label="Content" icon="ui-icon ui-icon-note">
-                <p:menuitem value="All" url="/listAllContent.faces" />
-                <p:menuitem value="New" url="/contentEdit.faces" />
-                <p:menuitem value="Tags" url="/listAllTags.faces" />
-              </p:submenu>
+              <pattern:snippet_to_xml>${fmsnippet.primefaces.fragment.menu}</pattern:snippet_to_xml>
             </p:menubar>
           </p:toolbarGroup>
           <p:toolbarGroup align="right">
             <p:outputPanel layout="inline" >
-              Signed in as #{identity.account.id}
+              Signed in as #{identity.account.loginName	}
             </p:outputPanel>
             <p:separator />
             <p:commandLink value="#{messages['logout.text']}" action="#{identity.logout}" rendered="#{identity.loggedIn}" />
