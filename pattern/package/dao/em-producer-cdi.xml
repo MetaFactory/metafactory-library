@@ -24,7 +24,6 @@
       <annotation>@PersistenceUnit</annotation>
     </attribute>
     <operation name="create" visibility="public" static="false" abstract="false" final="false">
-      <library>javax.enterprise.context.RequestScoped</library>
       <library>javax.enterprise.inject.Default</library>
       <library>javax.enterprise.inject.Produces</library>
       <library>javax.persistence.EntityManager</library>
