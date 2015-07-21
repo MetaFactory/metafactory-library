@@ -1,0 +1,18 @@
+<package xmlns="http://www.firstbase.nl/xsd/personaliom/pattern"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.firstbase.nl/xsd/personaliom/pattern http://www.firstbase.nl/xsd/personaliom/pattern.xsd"
+  name="${pattern.property.model.implementation.package}"
+  path="${pattern.property.directory.core}/${pattern.property.java.main.directory}"
+  package="domain_model"
+  skip="true">
+  <class name="${pattern.property.model.implementation.class}" visibility="public" enum="${model.property.object.enum}" foreach="object">
+    <operation name="getLabel">
+      <library>javax.persistence.Transient</library>
+      <apicomment>Create a short representation of ${object.name} which
+      can be used in combo's</apicomment>
+      <annotation>@Transient</annotation>
+      <parameter name="return"><datatype>String</datatype></parameter>
+      <body>${fmsnippet.java.pojo.operation.label}</body>
+    </operation>
+  </class>
+</package>
