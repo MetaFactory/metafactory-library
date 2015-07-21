@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<package xmlns="http://www.firstbase.nl/xsd/personaliom/pattern"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.firstbase.nl/xsd/personaliom/pattern http://www.firstbase.nl/xsd/personaliom/pattern.xsd"
+  name="${genpack}.comparator"
+  path="${pattern.property.directory.common}/${pattern.property.java.main.directory}"
+  package="domain_model"
+  skip="true">
+  <class name="${object.name}Comparator" visibility="public" foreach="object" condition="${model.property.object.comparator.create}==true">
+    <libraries>
+      <library>java.util.Comparator</library>
+      <library>${pattern.property.model.implementation.fqcn}</library>
+    </libraries>
+    <implements><![CDATA[Comparator<${pattern.property.model.implementation.class}>]]></implements>
+    <operation name="compare" visibility="public">
+      <annotation>@Override</annotation>
+      <parameter name="return"><datatype>int</datatype></parameter>
+      <parameter name="o1"><datatype>${pattern.property.model.implementation.class}</datatype></parameter>
+      <parameter name="o2"><datatype>${pattern.property.model.implementation.class}</datatype></parameter>
+      <body>${fmsnippet.java.comparator.compare}</body>
+    </operation>
+  </class>
+</package>
