@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<package  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.firstbase.nl/xsd/personaliom/pattern"
+          xsi:schemaLocation="http://www.firstbase.nl/xsd/personaliom/pattern http://www.firstbase.nl/xsd/personaliom/pattern.xsd"
+          name="${pattern.property.cdi.dao.package}"
+          path="${pattern.property.java.main.directory}"
+          package="domain_model">
+  <class name="${pattern.property.product.keyword}RootBean" visibility="public" abstract="true">
+    <attribute name="localeBean" visibility="protected">
+      <library>javax.inject.Inject</library>
+      <library>${genpack}.cdi.LocaleBean</library>
+      <datatype>LocaleBean</datatype>
+      <apicomment>Util bean holding locale information for this session</apicomment>
+      <annotation>@Inject</annotation>
+    </attribute>
+  </class>
+</package>
