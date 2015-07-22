@@ -28,11 +28,12 @@
       <scope>provided</scope>
     </dependency>
 
-    <!-- Use our projectspecific PrimeFaces Theme -->
+    <!-- Use our projectspecific PrimeFaces Theme
     <dependency>
       <groupId>${pattern.property.maven.group}</groupId>
     <artifactId>${pattern.property.maven.artifact.theme}</artifactId>
     </dependency>
+    -->
 
     <pattern:snippet_to_xml>${fmsnippet.primefaces.theme.maven_web_dependency}</pattern:snippet_to_xml>
 
