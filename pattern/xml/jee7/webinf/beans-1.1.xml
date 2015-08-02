@@ -11,14 +11,6 @@
          bean-discovery-mode="all">
     <interceptors>
       <class>org.apache.deltaspike.security.impl.extension.SecurityInterceptor</class>
-  <!--
-  De TransactionalInterceptor voorkomt deze exception:
-  javax.persistence.TransactionRequiredException: no transaction is in progress
-   -->
-      <class>org.apache.deltaspike.jpa.impl.transaction.TransactionalInterceptor</class>
     </interceptors>
-    <alternatives>
-      <class>org.apache.deltaspike.jpa.impl.transaction.BeanManagedUserTransactionStrategy</class>
-    </alternatives>
   </beans>
 </pattern:xml>
