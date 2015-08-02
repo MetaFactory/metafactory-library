@@ -85,6 +85,7 @@
       <scope>runtime</scope>
     </dependency>
 
+<![CDATA[
     <!-- DeltaSpike JPA Module -->
     <dependency>
       <groupId>org.apache.deltaspike.modules</groupId>
@@ -96,6 +97,7 @@
       <artifactId>deltaspike-jpa-module-impl</artifactId>
       <scope>runtime</scope>
     </dependency>
+]]>
 
     <!-- PicketLink IDM dependencies-->
     <dependency>
