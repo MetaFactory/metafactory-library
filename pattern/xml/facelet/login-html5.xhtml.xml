@@ -90,14 +90,15 @@
       <h:body>
         <section class="loginform cf">
           <h:form>
+            <p:focus />
             <ul>
               <li>
                 <h:outputLabel for="username">Username</h:outputLabel>
-                <h:inputText name="username" value="#{loginCredentials.userId}" pt:placeholder="Username" required="true" />
+                <h:inputText id="username" value="#{loginCredentials.userId}" pt:placeholder="Username" required="true" />
               </li>
               <li>
                 <h:outputLabel for="password">Password</h:outputLabel>
-                <h:inputSecret name="password" value="#{loginCredentials.password}" pt:placeholder="Password" required="true" />
+                <h:inputSecret id="password" value="#{loginCredentials.password}" pt:placeholder="Password" required="true" />
               </li>
               <li>
                 <h:commandButton value="Login" action="#{identity.login}" />

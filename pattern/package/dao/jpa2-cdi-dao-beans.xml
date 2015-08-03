@@ -111,11 +111,16 @@
     <libraries>
         <library>java.io.Serializable</library>
         <library>${pattern.property.model.implementation.package}.${pattern.property.model.implementation.class}</library>
-        <library>javax.enterprise.inject.Model</library>
+        <library>javax.inject.Named</library>
+        <library>javax.transaction.Transactional</library>
+        <library>javax.transaction.Transactional.TxType</library>
     </libraries>
 <!--
- -->
+        <library>javax.enterprise.inject.Model</library>
     <annotation>@Model</annotation>
+ -->
+    <annotation>@Named</annotation>
+    <annotation>@Transactional(TxType.MANDATORY)</annotation>
     <inherits><![CDATA[${pattern.property.product.keyword}RootBean<${pattern.property.model.implementation.class}>]]></inherits>
     <implements>Serializable</implements>
     <attribute name="LOG" visibility="private" static="true" final="true">
