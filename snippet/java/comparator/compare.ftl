@@ -1,9 +1,9 @@
 <#--stop if $currentModelPackage is null-->
 <#if !(currentModelPackage)??>  ${generator.error("currentModelPackage not found in context")} </#if>
-
+<#---->
 <#--stop if $currentModelObject is null-->
 <#if !(currentModelObject)??>  <#stop "currentModelObject not found in context" ></#if>
-
+<#---->
 <#assign modelPackage = currentModelPackage>
 <#assign modelObjectName = currentModelObject.getAttributeValue("name")>
 <#assign modelObjectNameFL = generator.firstLower(modelObjectName)>
@@ -81,6 +81,7 @@ else
   </#if>
 }
 return result;
+
 <#----------------------------------------------------------------------------------------------------------->
 
 <#macro compareAttribute attributeField>
@@ -105,6 +106,11 @@ return result;
       {
         <#call compareSinglePrimitiveAttribute attributeName=attributeName wrapperClass="" isBooleanType=true />
       }
+    <#elseif javaType=="int" || javaType=="long">
+      if (o1.get${attributeNameFU}() != o2.get${attributeNameFU}())
+      {
+        result = o2.get${attributeNameFU}() - o1.get${attributeNameFU}()
+      }
     <#else>
       <#local wrapperClass = generator.getJavaWrapperClass(attributeType) >
       if (o1.get${attributeNameFU}() != o2.get${attributeNameFU}())
@@ -120,19 +126,30 @@ return result;
         <#call compareSingleNotPrimitiveAttribute attributeName=attributeName attributeType=attributeType />
       }
     <#else>
-      if (!o1.get${attributeNameFU}().equals(o2.get${attributeNameFU}()))
+      // ${attributeName} is not required, so check also null values
+      if (o1.get${attributeNameFU}() == null && o2.get${attributeNameFU}() != null)
       {
-        <#call compareSingleNotPrimitiveAttribute attributeName=attributeName attributeType=attributeType />
+        result = -1;
+      }
+      else if (o1.get${attributeNameFU}() != null && o2.get${attributeNameFU}() == null)
+      {
+        result = 1;
+      }
+      else if (o1.get${attributeNameFU}() != null && o2.get${attributeNameFU}() != null  && !o1.get${attributeNameFU}().equals(o2.get${attributeNameFU}()))
+      {
+        <#call compareSingleNotPrimitiveAttribute attributeName attributeType />
       }
     </#if>
   </#if>
 </#macro>
+
 <#----------------------------------------------------------------------------------------------------------->
+
 <#macro compareSingleAttribute attributeField>
   <#if attributeField.getName() != "attribute">
     ${generator.error("Error in snippet compare: macro compareSingleAttribute called with wrong parameter. Only attribute allowed, but name of parameter element is " + attributeField.getName())}
   </#if>
-  <#---->
+
   <#local attributeName = attributeField.getAttributeValue("name")>
   <#local attributeType = attributeField.getAttributeValue("type")>
   <#if generator.isPrimitiveJavaType(attributeType)>
@@ -177,7 +194,7 @@ return result;
   <#if referenceField.getName() != "reference">
     ${generator.error("Error in snippet compare: macro compareReference called with wrong first parameter. Only reference allowed, but name of parameter element is " + referenceField.getName())}
   </#if>
-  <#---->
+
   <#local referenceName = referenceField.getAttributeValue("name")>
   <#local referenceType = referenceField.getAttributeValue("type")>
   if (!o1.get${referenceName?cap_first}().equals(o2.get${referenceName?cap_first}()))
