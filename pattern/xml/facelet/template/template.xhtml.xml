@@ -15,6 +15,7 @@
         xmlns:o="http://omnifaces.org/ui"
         >
 
+    <f:view transient="#{empty transient ? false : transient}">
       <h:head>
         <meta charset="utf-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -62,7 +63,7 @@
 
           <h:outputStylesheet library="css" name="default.css"/>
       </h:head>
-      <h:body>
+      <h:body class="metafactory">
          <ui:insert name="header">
            <ui:include src="/WEB-INF/fragment/header.xhtml" />
          </ui:insert>
@@ -76,5 +77,6 @@
            <ui:include src="/WEB-INF/fragment/footer.xhtml" />
          </ui:insert>
       </h:body>
+    </f:view>
   </html>
 </pattern:xml>
