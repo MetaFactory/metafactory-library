@@ -23,7 +23,16 @@
       <resource-handler>org.omnifaces.resourcehandler.CDNResourceHandler</resource-handler>
     </application>
     <pattern:snippet_to_xml>${fmsnippet.xml.faces_config.navigation_rules}</pattern:snippet_to_xml>
-    <pattern:snippet_to_xml>${fmsnippet.xml.faces_config.lifecycle}</pattern:snippet_to_xml>
-  
+
+    <lifecycle>
+      <pattern:snippet_to_xml>${fmsnippet.xml.faces_config.lifecycle}</pattern:snippet_to_xml>
+    </lifecycle>
+    <factory>
+      <pattern:snippet_to_xml>${fmsnippet.xml.faces_config.factory}</pattern:snippet_to_xml>
+    </factory>
+
+
+
+
   </faces-config>
 </pattern:xml>
