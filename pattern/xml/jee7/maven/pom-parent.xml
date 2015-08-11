@@ -31,7 +31,7 @@
     <maven.compiler.fork>true</maven.compiler.fork>
     <version.hibernate>4.3.7.Final</version.hibernate>
     <version.hibernate.envers>4.3.7.Final</version.hibernate.envers>
-    <version.primefaces>4.0</version.primefaces>
+    <version.primefaces>5.2</version.primefaces>
     <version.primefaces-extensions>2.1.0</version.primefaces-extensions>
     <version.picketlink.javaee.bom>2.7.0.Final</version.picketlink.javaee.bom>
     <version.deltaspike>1.4.2</version.deltaspike>
