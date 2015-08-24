@@ -24,11 +24,12 @@
             </p:menubar>
           </p:toolbarGroup>
           <p:toolbarGroup align="right">
-            <p:outputPanel layout="inline" >
-              Signed in as #{identity.account.loginName	}
-            </p:outputPanel>
-            <p:separator />
+          <div class="toolbar_group_right">
+            <p:outputPanel layout="inline" rendered="#{!identity.loggedIn}">Not signed in: </p:outputPanel>
+            <p:outputPanel layout="inline" rendered="#{identity.loggedIn}">Signed in as #{identity.account.loginName}: </p:outputPanel>
             <p:commandLink value="#{messages['logout.text']}" action="#{identity.logout}" rendered="#{identity.loggedIn}" />
+            <h:link outcome="login" rendered="#{!identity.loggedIn}" value="Login"/>
+          </div>
           </p:toolbarGroup>
         </p:toolbar>
       </div>

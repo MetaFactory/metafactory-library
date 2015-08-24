@@ -12,7 +12,7 @@
     xmlns:p="http://primefaces.org/ui">
 
     <footer>
-      <h4>Footer</h4>
+      <h:graphicImage id="logo_footer" library="image" name="logo-MetaFactory-WitBlauw.png" alt="MetaFactory - Logo" />
     </footer>
 
   </ui:composition>

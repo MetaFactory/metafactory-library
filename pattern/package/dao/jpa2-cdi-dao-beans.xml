@@ -392,52 +392,6 @@
         <body>${fmsnippet.java.jpa2.findPluralByFields}</body>
     </operation>
 
-
-<!--
-    <operation name="load${forEachPropertyValue}" visibility="public" foreach="currentModelObject.property.lazydatamodel" var0="${forEachPropertyValue}">
-        <library>java.util.List</library>
-        <library>java.util.Map</library>
-        <library>${pattern.property.model.implementation.package}.${pattern.property.model.implementation.class}</library>
-        <parameter name="return"><datatype><![CDATA[List<${pattern.property.model.implementation.class}>]]></datatype></parameter>
-        <parameter name="first"><datatype>int</datatype></parameter>
-        <parameter name="pageSize"><datatype>int</datatype></parameter>
-        <parameter name="sortField"><datatype>String</datatype></parameter>
-        <parameter name="sortOrder"><datatype>Boolean</datatype></parameter>
-        <parameter name="filters"><datatype><![CDATA[Map<String, String>]]></datatype></parameter>
-        <parameter name="${attribute.name}" foreach="attribute.property.lazydatamodel.${var0}.parameter" var1="${forEachPropertyValue}">
-            <datatype>${attribute.type}</datatype>
-        </parameter>
-        <parameter name="${reference.name}" foreach="reference.property.lazydatamodel.${var0}.parameter" var1="${forEachPropertyValue}">
-            <datatype>${pattern.property.model.implementation.reference}</datatype>
-        </parameter>
-        <body>${fmsnippet.java.cdi.beans.load}</body>
-    </operation>
-    <operation name="get${forEachPropertyValue}ResultCount" visibility="public" foreach="currentModelObject.property.lazydatamodel" var0="${forEachPropertyValue}">
-        <library>java.util.List</library>
-        <library>java.util.Map</library>
-        <library>${pattern.property.model.implementation.package}.${pattern.property.model.implementation.class}</library>
-        <parameter name="return"><datatype>Long</datatype></parameter>
-        <parameter name="filters"><datatype><![CDATA[Map<String, String>]]></datatype></parameter>
-        <parameter name="${attribute.name}" foreach="attribute.property.lazydatamodel.${var0}.parameter" var1="${forEachPropertyValue}">
-            <datatype>${attribute.type}</datatype>
-        </parameter>
-        <parameter name="${reference.name}" foreach="reference.property.lazydatamodel.${var0}.parameter" var1="${forEachPropertyValue}">
-            <datatype>${pattern.property.model.implementation.reference}</datatype>
-        </parameter>
-        <body>${fmsnippet.java.cdi.beans.getResultCount}</body>
-    </operation>
-    <operation name="applyFiltersFor${forEachPropertyValue}" visibility="private" foreach="currentModelObject.property.lazydatamodel" var0="${forEachPropertyValue}">
-      <library>javax.persistence.criteria.Predicate</library>
-      <library>javax.persistence.criteria.Root</library>
-      <library>javax.persistence.criteria.CriteriaBuilder</library>
-      <parameter name="return"><datatype>Predicate</datatype></parameter>
-      <parameter name="filters"><datatype><![CDATA[Map<String, String>]]></datatype></parameter>
-      <parameter name="cb"><datatype>CriteriaBuilder</datatype></parameter>
-      <parameter name="from${object.name}"><datatype><![CDATA[Root<${pattern.property.model.implementation.class}>]]></datatype></parameter>
-      <body>${fmsnippet.java.cdi.beans.applyFilters}</body>
-    </operation>
- -->
-
     <operation name="fill${firstUpper(${reference.name})}ComboForAdd" foreach="reference" condition="${fmsnippet.condition.reference_1_no_enum} AND ${pattern.property.create.combo.fill}==true">
       <library>java.util.List</library>
       <library>${genpack}.model.implementation.${reference.type}</library>
