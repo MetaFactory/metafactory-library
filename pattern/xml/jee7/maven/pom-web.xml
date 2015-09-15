@@ -142,6 +142,7 @@
         <configuration>
           <source>${maven.compiler.source}</source>
           <target>${maven.compiler.target}</target>
+          <compilerArgument>-proc:none</compilerArgument>
           <!-- <compilerArgument>-proc:none</compilerArgument> <compilerArgument>-proc:none</compilerArgument> http://docs.jboss.org/hibernate/jpamodelgen/1.0/reference/en-US/html_single/#d0e261 -->
         </configuration>
       </plugin>
