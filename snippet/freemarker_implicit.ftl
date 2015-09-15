@@ -9,4 +9,5 @@
 [#-- @ftlvariable name="var3" type="java.lang.String" --]
 [#-- @ftlvariable name="var4" type="java.lang.String" --]
 [#-- @ftlvariable name="var5" type="java.lang.String" --]
+[#-- @ftlvariable name="metafactory" type="com.metafactory.api.IMetaFactoryTemplateEngineProxy" --]
 [#-- @ftlvariable name="generator" type="com.metafactory.api.IMetaFactoryTemplateEngineProxy" --]
