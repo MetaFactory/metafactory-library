@@ -4,7 +4,10 @@
 <#assign attributeName = currentModelAttribute.getAttributeValue("name") >
 <#assign attributeType = currentModelAttribute.getAttributeValue("type") >
 <#assign attributeNameFU = attributeName?cap_first >
-
+<#assign debugPojo = context.getPatternPropertyValue("debug.pojo","false") >
+<#if (debugPojo=="true") >
+  LOG.info("set${attributeNameFU}({})", ${attributeName});
+</#if>
 <#-- The only additional thing this setter will do is convert a empty String to null type of attribute is String -->
 <#--
   ${generator.addLibraryToClass("org.apache.commons.lang.StringUtils")}

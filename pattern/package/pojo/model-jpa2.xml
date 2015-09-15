@@ -5,7 +5,7 @@
   path="${pattern.property.directory.core}/${pattern.property.java.main.directory}"
   package="domain_model"
   skip="true">
-  <class name="BaseModel" visibility="public">
+  <class name="BaseModel" visibility="public" abstract="true">
     <libraries>
       <library>javax.persistence.MappedSuperclass</library>
     </libraries>
@@ -18,6 +18,9 @@
       <annotation>@Version</annotation>
       <annotation>@Column(name="version", nullable= false, columnDefinition = "integer DEFAULT 0")</annotation>
     </attribute>
+    <operation name="getId" abstract="true">
+    	<parameter name="return"><datatype>Long</datatype></parameter>
+    </operation>
   </class>
   <class name="${pattern.property.model.implementation.class}" visibility="public" enum="${model.property.object.enum}" foreach="object">
     <libraries>
@@ -32,6 +35,14 @@
     <inherits condition="${model.property.object.enum}!=true">BaseModel</inherits>
     <implements>Serializable</implements>
     <enumConstants condition="${model.property.object.enum}==true">${fmsnippet.java.pojo.enum.enumConstants}</enumConstants>
+
+    <attribute name="LOG" visibility="private" static="true" final="true" condition="${pattern.property.debug.pojo}==true">
+      <library>org.slf4j.Logger</library>
+      <library>org.slf4j.LoggerFactory</library>
+      <datatype>Logger</datatype>
+      <body>LoggerFactory.getLogger(${generated.class.name}.class.getName())</body>
+    </attribute>
+
     <attribute name="serialVersionUID" visibility="private" static="true" final="true">
       <datatype>long</datatype>
       <body>${fmsnippet.java.pojo.attribute.serialVersionUID}</body>
@@ -124,6 +135,7 @@
       <annotation condition="${model.property.reference.database.pk.composite}==true">@Id</annotation>
       <annotation>${snippet.java.annotation.jpa.joincolumn}</annotation>
       <annotation>${snippet.java.annotation.jpa.manytoone}</annotation>
+      <setterBody>${fmsnippet.java.pojo.operation.setReference}</setterBody>
     </attribute>
     <attribute name="${reference.name}Set" foreach="reference" access="rw" condition="${reference.multiplicity}=0..n">
       <library>java.util.HashSet</library>
@@ -183,6 +195,13 @@
         <datatype> ${reference.type}</datatype>
       </parameter>
       <body>${fmsnippet.java.pojo.operation.constructor.constructor-use-fields} </body>
+    </operation>
+    <operation name="getId">
+    	<annotation>@Override</annotation>
+    	<parameter name="return"><datatype>Long</datatype></parameter>
+    	<body>
+    		return get${firstUpper(${pattern.property.pk})}();
+    	</body>
     </operation>
 
     <operation name="addTo${firstUpper(${reference.name})}" foreach="reference" condition="${reference.multiplicity}=0..n OR ${reference.multiplicity}=1..n">
