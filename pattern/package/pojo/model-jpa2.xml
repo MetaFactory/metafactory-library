@@ -196,7 +196,7 @@
       </parameter>
       <body>${fmsnippet.java.pojo.operation.constructor.constructor-use-fields} </body>
     </operation>
-    <operation name="getId">
+    <operation name="getId" condition="${model.property.object.enum}!=true">
     	<annotation>@Override</annotation>
     	<parameter name="return"><datatype>Long</datatype></parameter>
     	<body>
