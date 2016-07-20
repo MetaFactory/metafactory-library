@@ -50,3 +50,5 @@
 [#-- @ftlvariable name="bigdecimal" type="java.math.BigDecimal" --]
 [#-- @ftlvariable name="biginteger" type="java.math.BigInteger" --]
 [#-- @ftlvariable name="stringUtils" type="org.apache.commons.lang.StringUtils" --]
+[#-- @ftlvariable name="dollar" type="java.lang.String" --]
+[#-- @ftlvariable name="hash" type="java.lang.String" --]
