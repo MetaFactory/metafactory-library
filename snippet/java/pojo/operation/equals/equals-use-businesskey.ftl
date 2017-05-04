@@ -20,8 +20,8 @@
   <#assign noPrimitiveBusinessKeys = true >
   <#list sortedBusinessKeyFields as field>
     <#if field.getName()=="attribute" >
-      <#assign attributeType = field.getAttributeValue("type") >
-      <#if generator.isPrimitiveJavaType(attributeType) >
+      <#assign attributeType = field.type >
+      <#if metafactory.isPrimitiveJavaType(attributeType) >
         <#assign noPrimitiveBusinessKeys = false >
       </#if>
     </#if>
@@ -33,12 +33,12 @@
   <#compress>
   <#list sortedBusinessKeyFields as field>
     <#if (field_index > 0) > else </#if>
-    <#if field.getName() == "attribute" >
-      <#assign attributeName = field.getAttributeValue( "name")>
-      <#assign attributeType = field.getAttributeValue( "type")>
+    <#if field.kind == "attribute" >
+      <#assign attributeName = field.name>
+      <#assign attributeType = field.type>
       <#assign attributeNameFU = attributeName?cap_first>
-      <#if generator.isPrimitiveJavaType(attributeType) >
-        <#if generator.getJavaType(attributeType) == "boolean" >
+      <#if metafactory.isPrimitiveJavaType(attributeType) >
+        <#if metafactory.getJavaType(attributeType) == "boolean" >
           if (this.is${attributeNameFU}() != ${compareObject}.is${attributeNameFU}()) {
             result = false;
           }
@@ -52,20 +52,20 @@
           result = false;
         }
       </#if>
-    <#elseif field.getName()== "reference" >
-      <#assign referenceName = field.getAttributeValue( "name")>
-      <#assign referenceType = field.getAttributeValue( "type")>
+    <#elseif field.kind== "reference" >
+      <#assign referenceName = field.name>
+      <#assign referenceType = field.type>
       <#assign referenceNameFU = referenceName?cap_first>
       if (this.get${referenceNameFU}() != null && ! this.get${referenceNameFU}().equals(${compareObject}.get${referenceNameFU}())) {
         result = false;
       }
     <#else>
-      <#stop "Unexpected businessKey element found: $field.getName(). Only attribute or reference expected.">
+      <#stop "Unexpected businessKey element found: $field.kind. Only attribute or reference expected.">
     </#if>
     <#--Add this field to the apicomment -->
     <#assign previousComment = apicommentText >
     <#assign counter = field_index + 1 >
-    <#assign apicommentText = " ${previousComment} ${counter}) ${field.getAttributeValue('name')}" >
+    <#assign apicommentText = " ${previousComment} ${counter}) ${field.name}" >
   </#list>
   </#compress>
   <#if noPrimitiveBusinessKeys == true >
@@ -83,16 +83,16 @@ ${generatedOperation.setApiComment(apicommentText)}
   if (
     <#list bkList as field>
       <#if (field_index > 0) > && </#if>
-      <#if field.getName() == "attribute" >
-        <#assign attributeName = field.getAttributeValue( "name")>
+      <#if field.kind == "attribute" >
+        <#assign attributeName = field.name>
         <#assign attributeNameFU = attributeName?cap_first>
         this.get${attributeNameFU}() == null
-      <#elseif field.getName()== "reference" >
-        <#assign referenceName = field.getAttributeValue( "name")>
+      <#elseif field.kind== "reference" >
+        <#assign referenceName = field.name>
         <#assign referenceNameFU = referenceName?cap_first>
         this.get${referenceNameFU}() == null
       <#else>
-        <#stop "Unexpected businessKey element found: $field.getName(). Only attribute or reference expected.">
+        <#stop "Unexpected businessKey element found: $field.kind. Only attribute or reference expected.">
       </#if>
     </#list>
       )

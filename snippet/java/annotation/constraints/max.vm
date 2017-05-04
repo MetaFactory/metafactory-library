@@ -1,17 +1,17 @@
-##stop if $currentModelAttribute is null
-#if(!$currentModelAttribute)
-  $generator.error("currentModelAttribute not found in context")
+##stop if $modelAttribute is null
+#if(!$modelAttribute)
+  $metafactory.error("modelAttribute not found in context")
 #end
-#set($attribute=$currentModelAttribute)
-#set($attributeName=$attribute.getAttributeValue("name"))
-#set($attributeType=$attribute.getAttributeValue("type"))
-#set($javaType=$generator.getJavaType($attributeType))
+#set($attribute=$modelAttribute)
+#set($attributeName=${attribute.name})
+#set($attributeType=${attribute.type})
+#set($javaType=$metafactory.getJavaType($attributeType))
 ##see http://jackson.codehaus.org/javadoc/bean-validation-api/1.0/javax/validation/constraints/Max.html
 #if($javaType=="BigDecimal" || $javaType=="BigInteger" || $javaType=="byte" || $javaType=="Byte" || $javaType=="short" || $javaType=="Short" || $javaType=="int" || $javaType=="Integer" || $javaType=="long" || $javaType=="Long")
     #set($maxValue="")## set to empty string explicitly, otherwise value is not set to null if nothing found
-    #set($maxValue=$generator.getElementProperty(${attribute}, "maxValue"))
+    #set($maxValue=$attribute.getMetaData("maxValue"))
     #if($maxValue && $maxValue != "")
-      $generator.addLibraryToClass("javax.validation.constraints.Max")##
+      $metafactory.addLibraryToClass("javax.validation.constraints.Max")##
       @Max(${maxValue})
     #end
 #end

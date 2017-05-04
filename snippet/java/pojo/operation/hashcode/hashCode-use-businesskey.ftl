@@ -14,36 +14,36 @@ int result;
   result=14;
 
   <#list businessKeyFields as field>
-    <#if (field.getName()=="attribute") >
-        <#assign attributeName = field.getAttributeValue("name") >
-        <#assign attributeType = field.getAttributeValue("type") >
-        <#assign attributeNameFU = generator.firstUpper(attributeName) >
-        <#if (generator.isPrimitiveJavaType(attributeType)) >
+    <#if (field.kind=="attribute") >
+        <#assign attributeName = field.name >
+        <#assign attributeType = field.type >
+        <#assign attributeNameFU = metafactory.firstUpper(attributeName) >
+        <#if (metafactory.isPrimitiveJavaType(attributeType)) >
           <#if (attributeType == "bool" || attributeType == "boolean") >
             result = 29*result + Boolean.valueOf(${attributeName}).hashCode(); <#-- prevents a PMD error -->
           <#else>
-            result = 29*result + new ${generator.getJavaWrapperClass(attributeType)}(${attributeName}).hashCode();
+            result = 29*result + new ${metafactory.getJavaWrapperClass(attributeType)}(${attributeName}).hashCode();
           </#if>
         <#else>
           <#-- handle primitivetypes other than objects -->
           if (${attributeName} != null) {
-            result = 29*result + this.get${generator.firstUpper(attributeName)}().hashCode();
+            result = 29*result + this.get${metafactory.firstUpper(attributeName)}().hashCode();
           }
         </#if>
-    <#elseif (field.getName()=="reference") >
-        <#assign referenceName = field.getAttributeValue("name") >
-        <#assign referenceType = field.getAttributeValue("type") >
+    <#elseif (field.kind=="reference") >
+        <#assign referenceName = field.name >
+        <#assign referenceType = field.type >
         <#assign referenceNameFU = referenceName?cap_first >
         if (${referenceName} != null) {
           result = 17*result + ${referenceName}.hashCode();
         }
     <#else>
-      <#stop "Unexpected businessKey element found: ${field.getElementName()}. Only attribute of reference expected." >
+      <#stop "Unexpected businessKey element found: ${field.kind}. Only attribute of reference expected." >
     </#if>
     <#--Add this field to the apicomment -->
     <#assign previousComment = apicommentText >
     <#assign counter = field_index + 1 >
-    <#assign apicommentText = " ${previousComment} ${counter}) ${field.getAttributeValue('name')}" >
+    <#assign apicommentText = " ${previousComment} ${counter}) ${field.name}" >
   </#list>
   <#assign apicommentText = "${apicommentText}." >
   ${generatedOperation.setApiComment(apicommentText)}

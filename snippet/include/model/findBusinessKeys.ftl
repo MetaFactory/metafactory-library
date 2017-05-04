@@ -3,27 +3,27 @@
   sortedBusinessKeyFields, which is sorted by the value of the businesskey property.
   The unsorted list (with the same order as the model) is named businessKeyFields
 -->
-<#--stop if $currentModelPackage is null-->
-<#if !(currentModelPackage)??>  ${generator.error("currentModelPackage not found in context")} </#if>
+<#--stop if $modelPackage is null-->
+<#if !(modelPackage)??>  ${metafactory.error("modelPackage not found in context")} </#if>
 
-<#--stop if $currentModelObject is null-->
-<#if !(currentModelObject)??>  <#stop "currentModelObject not found in context" ></#if>
+<#--stop if $modelObject is null-->
+<#if !(modelObject)??>  <#stop "modelObject not found in context" ></#if>
 
 <#--stop if $comparatorFactory is null-->
 <#if !(comparatorFactory)??>  <#stop "comparatorFactory not found in context" ></#if>
 
-<#assign modelPackage = currentModelPackage >
-<#assign modelObjectName = currentModelObject.getAttributeValue("name") >
-<#assign modelObjectNameFL = generator.firstLower(modelObjectName) >
+
+<#assign modelObjectName = modelObject.name >
+<#assign modelObjectNameFL = metafactory.firstLower(modelObjectName) >
 
 <#--Get all attributes with property businesskey -->
-<#assign bkAttributes = generator.findChildrenByProperty(currentModelObject, "attribute", "businesskey")>
+<#assign bkAttributes = modelObject.findAttributesByMetaData("businesskey")>
 
 <#--Get all references with property businesskey -->
-<#assign bkReferences = generator.findChildrenByProperty(currentModelObject, "reference", "businesskey")>
+<#assign bkReferences = modelObject.findReferencesByMetaData("businesskey")>
 <#assign businessKeyFields = bkAttributes>
 <#if businessKeyFields.addAll(bkReferences)> <#--trick to ignore result of addAll method--></#if>
 
 <#--comparator sorts elements by value of the specified property-->
-<#assign comparator = comparatorFactory.createElementComparator("businesskey" )>
-<#assign sortedBusinessKeyFields = generator.sort(businessKeyFields, comparator)>
+<#assign comparator = comparatorFactory.createMetaDataComparator("businesskey" )>
+<#assign sortedBusinessKeyFields = metafactory.sort(businessKeyFields, comparator)>

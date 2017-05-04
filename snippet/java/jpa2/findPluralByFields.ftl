@@ -1,35 +1,35 @@
-<#--stop if $currentModelObject is null-->
-<#if !(currentModelObject)??>  <#stop "currentModelObject not found in context" ></#if>
+<#--stop if $modelObject is null-->
+<#if !(modelObject)??>  <#stop "modelObject not found in context" ></#if>
 
-<#--stop if $currentModelPackage is null-->
-<#if !(currentModelPackage)??>  ${generator.error("currentModelPackage not found in context")} </#if>
+<#--stop if $modelPackage is null-->
+<#if !(modelPackage)??>  ${metafactory.error("modelPackage not found in context")} </#if>
 
 <#--stop if $var0 is null-->
-<#if !(var0)??>  ${generator.error("var0 not found in context")} </#if>
+<#if !(var0)??>  ${metafactory.error("var0 not found in context")} </#if>
 
-<#assign modelPackage = currentModelPackage>
-<#assign modelObjectName = currentModelObject.getAttributeValue("name")>
+
+<#assign modelObjectName = modelObject.name>
 <#assign modelObjectNameFL = modelObjectName?uncap_first>
-<#assign modelObjectNamePL = generator.getElementProperty(currentModelObject, "name.plural", "${modelObjectName}s")>
+<#assign modelObjectNamePL = modelObject.getMetaData("name.plural", "${modelObjectName}s")>
 <#assign modelObjectNamePLFL = modelObjectNamePL?uncap_first>
 <#assign propertyName = "dao.finder.list.key.${var0}">
 
 <#-- Get all the attributes and references of current model object which must be used in this finder method => which has property ${propertyName}-->
-<#assign finderAttributes = generator.findChildrenByProperty(currentModelObject, "attribute" , "${propertyName}" )>
-<#assign finderReferences = generator.findChildrenByProperty(currentModelObject, "reference" , "${propertyName}" )>
+<#assign finderAttributes = modelObject.findAttributesByMetaData("${propertyName}" )>
+<#assign finderReferences = modelObject.findReferencesByMetaData("${propertyName}" )>
 <#assign all = finderAttributes + finderReferences>
 
 <#-- packageName contains the name of the package of the pojo's -->
-<#assign packageName = generator.evaluateExpression("${'$'}{pattern.property.model.implementation.package}", context) >
+<#assign packageName = metafactory.evaluateExpression("${'$'}{pattern.property.model.implementation.package}", context) >
 
 <#-- className contains the name of the class of a pojo which is created foreach model object -->
-<#assign className = generator.evaluateExpression("${'$'}{pattern.property.model.implementation.class}", context) >
-${generator.addLibraryToClass("javax.persistence.criteria.Expression")}
-${generator.addLibraryToClass("javax.persistence.criteria.CriteriaBuilder")}
-${generator.addLibraryToClass("javax.persistence.criteria.CriteriaQuery")}
-${generator.addLibraryToClass("javax.persistence.criteria.Predicate")}
-${generator.addLibraryToClass("javax.persistence.criteria.Root")}
-${generator.addLibraryToClass("javax.persistence.TypedQuery")}
+<#assign className = metafactory.evaluateExpression("${'$'}{pattern.property.model.implementation.class}", context) >
+${metafactory.addLibraryToClass("javax.persistence.criteria.Expression")}
+${metafactory.addLibraryToClass("javax.persistence.criteria.CriteriaBuilder")}
+${metafactory.addLibraryToClass("javax.persistence.criteria.CriteriaQuery")}
+${metafactory.addLibraryToClass("javax.persistence.criteria.Predicate")}
+${metafactory.addLibraryToClass("javax.persistence.criteria.Root")}
+${metafactory.addLibraryToClass("javax.persistence.TypedQuery")}
 
 CriteriaBuilder cb = getEm().getCriteriaBuilder();
 CriteriaQuery<${className}> cq = cb.createQuery(${className}.class);
@@ -61,8 +61,8 @@ return result;
   <#if eName != "attribute">
     <#stop "macro useAttributeForFinder called with wrong argument. first parameter needs to be a attribute element, but is a " + eName + " instead. object=" + modelObjectName >
   </#if>
-  <#local attributeName = attribute.getAttributeValue("name")>
-  <#local attributeType = attribute.getAttributeValue("type")>
+  <#local attributeName = attribute.name>
+  <#local attributeType = attribute.type>
   <#local attributeNameFU = attributeName?cap_first >
   Expression<Boolean> equal${attributeNameFU} = cb.equal(from${className}.get(${className}_.${attributeName}), ${attributeName});
   allCriteria = cb.and(allCriteria, equal${attributeNameFU});
@@ -74,17 +74,17 @@ return result;
   <#if eName != "reference">
     <#stop "macro useReferenceForFinder called with wrong argument. first parameter needs to be a reference element, but is a " + eName + " instead. object=" + modelObjectName >
   </#if>
-  <#local referenceName = reference.getAttributeValue("name")>
-  <#local referenceType = reference.getAttributeValue("type")>
-  <#local multiplicity = reference.getAttributeValue("multiplicity")>
+  <#local referenceName = reference.name>
+  <#local referenceType = reference.type>
+  <#local multiplicity = reference.multiplicity>
   <#local referenceNameAU = referenceName?upper_case >
   <#local referenceNameFU = referenceName?cap_first >
-  <#local referenceObjectElement = generator.findChildByAttribute(currentModelPackage, "object" , "name", referenceType)>
-  <#local isEnum = generator.getElementProperty(referenceObjectElement, "enum")>
+  <#local referenceObjectElement = modelPackage.findObjectByName(referenceType)>
+  <#local isEnum = referenceObjectElement.getMetaData("enum")>
   <#-- referenceTypeName contains the name of the java type (class) which corresponds to model reference of type ${referenceType}, right? -->
-  ${context.setCurrentModelReference(reference)} <#-- FIXME Marnix 2011-12-23: New functionality must be created to prevent tricks like this.
+  ${context.setModelReference(reference)} <#-- FIXME Marnix 2011-12-23: New functionality must be created to prevent tricks like this.
   This link is needed to make the line below work -->
-  <#local referenceTypeName = generator.evaluateExpression("${'$'}{pattern.property.model.implementation.reference}", context) >
+  <#local referenceTypeName = metafactory.evaluateExpression("${'$'}{pattern.property.model.implementation.reference}", context) >
 
   <#if multiplicity == "0..1" || multiplicity == "1..1">
     <#-- TODO Marnix 2011-12-23: Ik weet eigenlijk niet eens zeker of het wel per s� een 0..1 of 1..1 reference moet zijn of dat 0..n ook zou kunnen -->
@@ -92,8 +92,8 @@ return result;
       Expression<Boolean> equal${referenceNameFU} = cb.equal(from${className}.get(${className}_.${referenceName}), ${referenceName});
     <#else>
       // join on ${referenceType}
-      ${generator.addLibraryToClass("${packageName}.${className}_")}
-      ${generator.addLibraryToClass("javax.persistence.criteria.Join")}
+      ${metafactory.addLibraryToClass("${packageName}.${className}_")}
+      ${metafactory.addLibraryToClass("javax.persistence.criteria.Join")}
       Join<${className}, ${referenceTypeName}> ${referenceName}Join = from${className}.join(${className}_.${referenceName});
       Expression<Boolean> equal${referenceNameFU} = cb.equal(${referenceName}Join, ${referenceName});
     </#if>

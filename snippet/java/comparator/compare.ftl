@@ -1,19 +1,19 @@
-<#--stop if $currentModelPackage is null-->
-<#if !(currentModelPackage)??>  ${generator.error("currentModelPackage not found in context")} </#if>
+<#--stop if $modelPackage is null-->
+<#if !(modelPackage)??>  ${metafactory.error("modelPackage not found in context")} </#if>
 <#---->
-<#--stop if $currentModelObject is null-->
-<#if !(currentModelObject)??>  <#stop "currentModelObject not found in context" ></#if>
+<#--stop if $modelObject is null-->
+<#if !(modelObject)??>  <#stop "modelObject not found in context" ></#if>
 <#---->
-<#assign modelPackage = currentModelPackage>
-<#assign modelObjectName = currentModelObject.getAttributeValue("name")>
-<#assign modelObjectNameFL = generator.firstLower(modelObjectName)>
+
+<#assign modelObjectName = modelObject.name>
+<#assign modelObjectNameFL = metafactory.firstLower(modelObjectName)>
 
 <#global comparatorPropertyName = context.getPatternPropertyValue("comparator.property", "businesskey") >
 
-<#assign comparatorAttributes = generator.findChildrenByProperty(currentModelObject, "attribute", comparatorPropertyName)>
-<#assign comparatorReferences = generator.findChildrenByProperty(currentModelObject, "reference", comparatorPropertyName)>
-<#assign comparator = comparatorFactory.createElementComparator(comparatorPropertyName)>
-<#assign isEnum = generator.elementContainsProperty(currentModelObject,"enum","true")>
+<#assign comparatorAttributes = modelObject.findAttributesByMetaData(comparatorPropertyName)>
+<#assign comparatorReferences = modelObject.findReferencesByMetaData(comparatorPropertyName)>
+<#assign comparator = comparatorFactory.createMetaDataComparator(comparatorPropertyName)>
+<#assign isEnum = modelObject.hasMetaData("enum", "true")>
 
 int result;
 if (o1 == null && o2 == null)
@@ -38,7 +38,7 @@ else
     <#assign globalCount = 1>
     <#assign comparatorFields = comparatorAttributes>
     <#if comparatorFields.addAll(comparatorReferences)><#--trick to ignore result of addAll method--></#if>
-    <#assign sortedComparatorFields = generator.sort(comparatorFields, comparator)>
+    <#assign sortedComparatorFields = metafactory.sort(comparatorFields, comparator)>
     <#if sortedComparatorFields.size()==0>
       <#stop "No fields found to use in comparator. object=${modelObjectName}. Add properties <${comparatorPropertyName}>int</${comparatorPropertyName}> to attributes and references. The name of this property (${comparatorPropertyName}) can be set by a 'pattern property' with <comparator.property>property.name.to.use</comparator.property>" >
     </#if>
@@ -52,7 +52,7 @@ else
       <#if globalCount &gt; 1>
         else
       </#if>
-      <#-- >// field ${globalCount} = ${field.getAttributeValue("name")} -->
+      <#-- >// field ${globalCount} = ${field.name} -->
       <#if field.getName() == "attribute">
         <#if only1Field>
           // compare single attribute
@@ -68,7 +68,7 @@ else
           <#call compareReference referenceField=field />
         </#if>
       <#else>
-        ${generator.error("Unexpected comparator element found: " + field.getElementName() + ". Only attribute of reference expected.")}
+        ${metafactory.error("Unexpected comparator element found: " + field.getElementName() + ". Only attribute of reference expected.")}
       </#if>
       <#assign globalCount = globalCount + 1>
     </#foreach>
@@ -86,20 +86,20 @@ return result;
 
 <#macro compareAttribute attributeField>
   <#if attributeField.getName() != "attribute">
-    ${generator.error("Error in snippet compare: macro compareAttribute called with wrong parameter. Only attribute allowed, but name of parameter element is " + attributeField.getName())}
+    ${metafactory.error("Error in snippet compare: macro compareAttribute called with wrong parameter. Only attribute allowed, but name of parameter element is " + attributeField.getName())}
   </#if>
   <#---->
-  <#local attributeName = attributeField.getAttributeValue("name")>
-  <#local attributeType = attributeField.getAttributeValue("type")>
-  <#local attributeNameFU = generator.firstUpper(attributeName)>
-  <#local notnull = attributeField.getAttributeValue("notnull") ! "">
+  <#local attributeName = attributeField.name>
+  <#local attributeType = attributeField.type>
+  <#local attributeNameFU = metafactory.firstUpper(attributeName)>
+  <#local notnull = attributeField.notnull ! "">
   <#if notnull == "true">
     <#local required = true>
   <#else>
     <#local required = false>
   </#if>
-  <#if generator.isPrimitiveJavaType(attributeType)>
-    <#local javaType = generator.getJavaType(attributeType) >
+  <#if metafactory.isPrimitiveJavaType(attributeType)>
+    <#local javaType = metafactory.getJavaType(attributeType) >
     <#if javaType == "boolean">
       <#-- boolean getters use "is" instead of "get"-->
       if (o1.is${attributeNameFU}() != o2.is${attributeNameFU}())
@@ -112,7 +112,7 @@ return result;
         result = o2.get${attributeNameFU}() - o1.get${attributeNameFU}()
       }
     <#else>
-      <#local wrapperClass = generator.getJavaWrapperClass(attributeType) >
+      <#local wrapperClass = metafactory.getJavaWrapperClass(attributeType) >
       if (o1.get${attributeNameFU}() != o2.get${attributeNameFU}())
       {
         <#call compareSinglePrimitiveAttribute attributeName=attributeName wrapperClass=wrapperClass isBooleanType=false />
@@ -147,17 +147,17 @@ return result;
 
 <#macro compareSingleAttribute attributeField>
   <#if attributeField.getName() != "attribute">
-    ${generator.error("Error in snippet compare: macro compareSingleAttribute called with wrong parameter. Only attribute allowed, but name of parameter element is " + attributeField.getName())}
+    ${metafactory.error("Error in snippet compare: macro compareSingleAttribute called with wrong parameter. Only attribute allowed, but name of parameter element is " + attributeField.getName())}
   </#if>
 
-  <#local attributeName = attributeField.getAttributeValue("name")>
-  <#local attributeType = attributeField.getAttributeValue("type")>
-  <#if generator.isPrimitiveJavaType(attributeType)>
-    <#local javaType = generator.getJavaType(attributeType) >
+  <#local attributeName = attributeField.name>
+  <#local attributeType = attributeField.type>
+  <#if metafactory.isPrimitiveJavaType(attributeType)>
+    <#local javaType = metafactory.getJavaType(attributeType) >
     <#if javaType == "boolean">
       <#call compareSinglePrimitiveAttribute attributeName=attributeName wrapperClass="" isBooleanType=true />
     <#else>
-      <#local wrapperClass = generator.getJavaWrapperClass(attributeType) >
+      <#local wrapperClass = metafactory.getJavaWrapperClass(attributeType) >
       <#call compareSinglePrimitiveAttribute attributeName=attributeName wrapperClass=wrapperClass isBooleanType=false />
     </#if>
   <#else>
@@ -192,11 +192,11 @@ return result;
 
 <#macro compareReference referenceField>
   <#if referenceField.getName() != "reference">
-    ${generator.error("Error in snippet compare: macro compareReference called with wrong first parameter. Only reference allowed, but name of parameter element is " + referenceField.getName())}
+    ${metafactory.error("Error in snippet compare: macro compareReference called with wrong first parameter. Only reference allowed, but name of parameter element is " + referenceField.getName())}
   </#if>
 
-  <#local referenceName = referenceField.getAttributeValue("name")>
-  <#local referenceType = referenceField.getAttributeValue("type")>
+  <#local referenceName = referenceField.name>
+  <#local referenceType = referenceField.type>
   if (!o1.get${referenceName?cap_first}().equals(o2.get${referenceName?cap_first}()))
   {
     <#call compareSingleReference referenceField />
@@ -206,10 +206,10 @@ return result;
 <#----------------------------------------------------------------------------------------------------------->
 
 <#macro compareSingleReference referenceField>
-  <#local referenceName = referenceField.getAttributeValue("name")>
-  <#local referenceType = referenceField.getAttributeValue("type")>
-  <#local referenceObjectElement = generator.findChildByAttribute(modelPackage, "object", "name", referenceType)>
-  <#local isEnum = generator.elementContainsProperty(referenceObjectElement,"enum","true")>
+  <#local referenceName = referenceField.name>
+  <#local referenceType = referenceField.type>
+  <#local referenceObjectElement = modelPackage.findObjectByName(referenceType)>
+  <#local isEnum = referenceObjectElement.hasMetaData("enum", "true")>
   <#if isEnum>
     <#--enums can be compared to each other-->
     result = o1.get${referenceName?cap_first}().compareTo(o2.get${referenceName?cap_first}());

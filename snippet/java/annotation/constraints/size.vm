@@ -1,13 +1,13 @@
-##stop if $currentModelAttribute is null
-#if(!$currentModelAttribute)
-  $generator.error("currentModelAttribute not found in context")
+##stop if $modelAttribute is null
+#if(!$modelAttribute)
+  $metafactory.error("modelAttribute not found in context")
 #end
-#set($attribute=$currentModelAttribute)
-#set($attributeName=$attribute.getAttributeValue("name"))
-#set($attributeType=$attribute.getAttributeValue("type"))
-#set($javaType=$generator.getJavaType($attributeType))
+#set($attribute=$modelAttribute)
+#set($attributeName=${attribute.name})
+#set($attributeType=${attribute.type})
+#set($javaType=$metafactory.getJavaType($attributeType))
 #set($length="")## set to empty string explicitly, otherwise value is not set to null if nothing found
-#set($length=$attribute.getAttributeValue("length"))
+#set($length=${attribute.length})
 ##see http://jackson.codehaus.org/javadoc/bean-validation-api/1.0/javax/validation/constraints/Size.html
 #if($javaType=="String")
     #set($useMin=false)
@@ -16,12 +16,12 @@
         #set($useMax=true)
     #end
     #set($minValue="")## set to empty string explicitly, otherwise value is not set to null if nothing found
-    #set($minValue=$generator.getElementProperty(${attribute}, "minValue"))
+    #set($minValue=$attribute.getMetaData("minValue"))
     #if($minValue && $minValue != "")
         #set($useMin=true)
     #end
     #if($useMin || $useMax)
-        $generator.addLibraryToClass("javax.validation.constraints.Size")##
+        $metafactory.addLibraryToClass("javax.validation.constraints.Size")##
         #if($useMin && $useMax)
             @Size(min=$minValue,max=${length})
         #elseif($useMin)

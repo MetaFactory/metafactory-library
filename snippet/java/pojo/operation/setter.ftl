@@ -1,8 +1,8 @@
-<#--stop if $currentModelAttribute is null-->
-<#if !(currentModelAttribute)??>  <#stop "currentModelAttribute not found in context" ></#if>
+<#--stop if $modelAttribute is null-->
+<#if !(modelAttribute)??>  <#stop "modelAttribute not found in context" ></#if>
 
-<#assign attributeName = currentModelAttribute.getAttributeValue("name") >
-<#assign attributeType = currentModelAttribute.getAttributeValue("type") >
+<#assign attributeName = modelAttribute.name >
+<#assign attributeType = modelAttribute.type >
 <#assign attributeNameFU = attributeName?cap_first >
 <#assign debugPojo = context.getPatternPropertyValue("debug.pojo","false") >
 <#if (debugPojo=="true") >
@@ -10,7 +10,7 @@
 </#if>
 <#-- The only additional thing this setter will do is convert a empty String to null type of attribute is String -->
 <#--
-  ${generator.addLibraryToClass("org.apache.commons.lang.StringUtils")}
+  ${metafactory.addLibraryToClass("org.apache.commons.lang.StringUtils")}
   if (StringUtils.isBlank(${attributeName}))
 -->
 <#if (attributeType=="String" || attributeType=="text") >

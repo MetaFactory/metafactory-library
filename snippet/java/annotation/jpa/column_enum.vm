@@ -1,18 +1,18 @@
 ##Create the @Column annotation with all it's possible attributes if applicable
 ##stop if $currentReference is null
-#if(!$currentModelReference)
-  $generator.error("currentModelReference not found in context")
+#if(!$modelReference)
+  $metafactory.error("modelReference not found in context")
 #end
 ##
-#set($reference=$currentModelReference)
-#set($required=$reference.getAttributeValue("notnull"))
-#set($immutable=$generator.elementContainsProperty($reference,"immutable","true"))
+#set($reference=$modelReference)
+#set($required=${reference.notnull})
+#set($immutable=$reference.hasMetaData("immutable", "true"))
 #if($required && $required=="true")
   #set($nullable=false)
 #else
   #set($nullable=true)
 #end
-@Column(name="${reference.getAttributeValue('name')}"
+@Column(name="${reference.name}"
 #if($immutable)
   ,updatable=false
 #end

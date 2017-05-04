@@ -1,21 +1,21 @@
 ##Create the @Column annotation with all it's possible attributes if applicable
-##stop if $currentModelAttribute is null
-#if(!$currentModelAttribute)
-  $generator.error("currentModelAttribute not found in context")
+##stop if $modelAttribute is null
+#if(!$modelAttribute)
+  $metafactory.error("modelAttribute not found in context")
 #end
-#set($attribute=$currentModelAttribute)
-#set($attributeType=$attribute.getAttributeValue("type"))
+#set($attribute=$modelAttribute)
+#set($attributeType=${attribute.type})
 #set($length="")## set to empty string explicitly, otherwise value is not set to null if nothing found
-#set($length=$attribute.getAttributeValue("length"))
-#set($required=$attribute.getAttributeValue("notnull"))
-#set($unique=$generator.elementContainsProperty($attribute,"unique","global"))
-#set($immutable=$generator.elementContainsProperty($attribute,"immutable","true"))
+#set($length=${attribute.length})
+#set($required=${attribute.notnull})
+#set($unique=$attribute.hasMetaData("unique", "global"))
+#set($immutable=$attribute.hasMetaData("immutable", "true"))
 #if($required && $required=="true")
   #set($nullable=false)
 #else
   #set($nullable=true)
 #end
-@Column(name="${attribute.getAttributeValue('name')}"
+@Column(name="${attribute.name}"
 #if($attributeType=="text")
   ,columnDefinition="TEXT"
 #end

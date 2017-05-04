@@ -1,19 +1,19 @@
 ##adds a @NotNull or @NotEmpty annotation
-#if(!$currentModelAttribute)
-  $generator.error("currentModelAttribute not found in context")
+#if(!$modelAttribute)
+  $metafactory.error("modelAttribute not found in context")
 #end
-#set($attribute=$currentModelAttribute)
-#set($required=$attribute.getAttributeValue("notnull"))
-#set($type=$attribute.getAttributeValue("type"))
+#set($attribute=$modelAttribute)
+#set($required=${attribute.notnull})
+#set($type=${attribute.type})
 #if($required=="true")
   #if($type=="String" || $type=="text")
     ## You can choose to use the Hibernate annotation NotEmpty for String and text attributes
-    ##$generator.addLibraryToClass("org.hibernate.validator.constraints.NotEmpty")##
+    ##$metafactory.addLibraryToClass("org.hibernate.validator.constraints.NotEmpty")##
     ##@NotEmpty
-    $generator.addLibraryToClass("javax.validation.constraints.NotNull")##
+    $metafactory.addLibraryToClass("javax.validation.constraints.NotNull")##
     @NotNull
   #else
-    $generator.addLibraryToClass("javax.validation.constraints.NotNull")##
+    $metafactory.addLibraryToClass("javax.validation.constraints.NotNull")##
     @NotNull
   #end
 #end

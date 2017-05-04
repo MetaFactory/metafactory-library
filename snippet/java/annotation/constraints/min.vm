@@ -1,17 +1,17 @@
-##stop if $currentModelAttribute is null
-#if(!$currentModelAttribute)
-  $generator.error("currentModelAttribute not found in context")
+##stop if $modelAttribute is null
+#if(!$modelAttribute)
+  $metafactory.error("modelAttribute not found in context")
 #end
-#set($attribute=$currentModelAttribute)
-#set($attributeName=$attribute.getAttributeValue("name"))
-#set($attributeType=$attribute.getAttributeValue("type"))
-#set($javaType=$generator.getJavaType($attributeType))
+#set($attribute=$modelAttribute)
+#set($attributeName=${attribute.name})
+#set($attributeType=${attribute.type})
+#set($javaType=$metafactory.getJavaType($attributeType))
 ##see http://jackson.codehaus.org/javadoc/bean-validation-api/1.0/javax/validation/constraints/Min.html
 #if($javaType=="BigDecimal" || $javaType=="BigInteger" || $javaType=="byte" || $javaType=="Byte" || $javaType=="short" || $javaType=="Short" || $javaType=="int" || $javaType=="Integer" || $javaType=="long" || $javaType=="Long")
     #set($minValue="")## set to empty string explicitly, otherwise value is not set to null if nothing found
-    #set($minValue=$generator.getElementProperty(${attribute}, "minValue"))
+    #set($minValue=$attribute.getMetaData("minValue"))
     #if($minValue && $minValue != "")
-      $generator.addLibraryToClass("javax.validation.constraints.Min")##
+      $metafactory.addLibraryToClass("javax.validation.constraints.Min")##
       @Min(${minValue})
     #end
 #end

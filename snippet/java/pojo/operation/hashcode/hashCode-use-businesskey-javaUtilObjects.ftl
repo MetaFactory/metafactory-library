@@ -13,37 +13,37 @@
   return result;
 <#else>
   //result=14;
-  ${generator.addLibraryToClass("java.util.Objects")}
+  ${metafactory.addLibraryToClass("java.util.Objects")}
   return Objects.hash(
 <#compress >
   <#list businessKeyFields as field>
     <#if (field_index > 0) >,</#if>
     <#if (field.getName()=="attribute") >
-        <#assign attributeName = field.getAttributeValue("name") >
-        <#assign attributeType = field.getAttributeValue("type") >
-        <#assign attributeNameFU = generator.firstUpper(attributeName) >
+        <#assign attributeName = field.name >
+        <#assign attributeType = field.type >
+        <#assign attributeNameFU = metafactory.firstUpper(attributeName) >
  <#--
-        <#if (generator.isPrimitiveJavaType(attributeType)) >
+        <#if (metafactory.isPrimitiveJavaType(attributeType)) >
           <#if (attributeType == "bool" || attributeType == "boolean") >
             result = 29*result + Boolean.valueOf(${attributeName}).hashCode(); <#-- prevents a PMD error -->
 
     <#--
           <#else>
-            result = 29*result + new ${generator.getJavaWrapperClass(attributeType)}(${attributeName}).hashCode();
+            result = 29*result + new ${metafactory.getJavaWrapperClass(attributeType)}(${attributeName}).hashCode();
           </#if>
         <#else>-->
           <#-- handle primitivetypes other than objects -->
  <#--
           if (${attributeName} != null) {
-            result = 29*result + this.get${generator.firstUpper(attributeName)}().hashCode();
+            result = 29*result + this.get${metafactory.firstUpper(attributeName)}().hashCode();
           }
         </#if>
         -->
       ${attributeName}
     <#elseif (field.getName()=="reference") >
-        <#assign referenceName = field.getAttributeValue("name") >
+        <#assign referenceName = field.name >
 <#--
-        <#assign referenceType = field.getAttributeValue("type") >
+        <#assign referenceType = field.type >
         <#assign referenceNameFU = referenceName?cap_first >
         if (${referenceName} != null) {
           result = 17*result + ${referenceName}.hashCode();
@@ -56,7 +56,7 @@
     <#--Add this field to the apicomment -->
     <#assign previousComment = apicommentText >
     <#assign counter = field_index + 1 >
-    <#assign apicommentText = " ${previousComment} ${counter}) ${field.getAttributeValue('name')}" >
+    <#assign apicommentText = " ${previousComment} ${counter}) ${field.name}" >
   </#list>
 );
 </#compress>

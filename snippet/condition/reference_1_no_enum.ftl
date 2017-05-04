@@ -1,24 +1,24 @@
 <#-- returns true if current reference is 0..1 or 1..1 and the reference is not a enum -->
-<#--stop if $currentModelPackage is null-->
-<#if !(currentModelPackage)??>  <#stop "currentModelPackage not found in context"> </#if>
+<#--stop if $modelPackage is null-->
+<#if !(modelPackage)??>  <#stop "modelPackage not found in context"> </#if>
 
-<#--stop if $currentModelObject is null-->
-<#if !(currentModelObject)??>  <#stop "currentModelObject not found in context" ></#if>
+<#--stop if $modelObject is null-->
+<#if !(modelObject)??>  <#stop "modelObject not found in context" ></#if>
 
-<#--stop if $currentModelReference is null-->
-<#if !(currentModelReference)??>  <#stop "currentModelReference not found in context" ></#if>
+<#--stop if $modelReference is null-->
+<#if !(modelReference)??>  <#stop "modelReference not found in context" ></#if>
 
-<#assign reference = currentModelReference>
-<#assign referenceName = reference.getAttributeValue("name")>
+<#assign reference = modelReference>
+<#assign referenceName = reference.name>
 <#assign referenceNameAU = referenceName?upper_case >
-<#assign referenceType = reference.getAttributeValue("type")>
-<#assign multiplicity = reference.getAttributeValue("multiplicity")>
+<#assign referenceType = reference.type>
+<#assign multiplicity = reference.multiplicity>
 
-<#if !(generator.findChildByAttribute(currentModelPackage, "object" , "name", referenceType))??>
-  <#stop "object with name ${referenceType} not found in package ${currentModelPackage.getAttributeValue('name')}. Reference defined in object with name ${currentModelObject.getAttributeValue('name')}">
+<#if !(modelPackage.findObjectByName(referenceType))??>
+  <#stop "object with name ${referenceType} not found in package ${modelPackage.name}. Reference defined in object with name ${modelObject.name}">
 </#if>
-<#assign referenceObjectElement = generator.findChildByAttribute(currentModelPackage, "object" , "name", referenceType)>
-<#assign isEnum = generator.getElementProperty(referenceObjectElement, "enum")>
+<#assign referenceObjectElement = modelPackage.findObjectByName(referenceType)>
+<#assign isEnum = referenceObjectElement.getMetaData("enum")>
 
 <#if (isEnum=="false" && (multiplicity == "0..1" || multiplicity == "1..1")) >
   true

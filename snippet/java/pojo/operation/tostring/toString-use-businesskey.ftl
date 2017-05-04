@@ -3,7 +3,7 @@
 <#--stop if $operationPattern is null-->
 <#if !(operationPattern)??>  <#stop "operationPattern not found in context => Is this snippet used to create a method?" ></#if>
 
-<#assign isEnum = generator.getElementProperty(currentModelObject, "enum")>
+<#assign isEnum = modelObject.getMetaData("enum")>
 <#if (isEnum=="true") >
   return this.name() + "(" + this.ordinal() + ")";
 <#else>
@@ -14,10 +14,10 @@
   <#list sortedBusinessKeyFields as field>
     <#if (field_index > 0) > result.append(", "); </#if>
     <#if field.getName() == "attribute" >
-      <#assign attributeName = field.getAttributeValue( "name")>
-      <#assign attributeType = field.getAttributeValue( "type")>
+      <#assign attributeName = field.name>
+      <#assign attributeType = field.type>
       <#assign attributeNameFU = attributeName?cap_first>
-      <#if generator.isPrimitiveJavaType(attributeType) >
+      <#if metafactory.isPrimitiveJavaType(attributeType) >
         result.append("${attributeName}=" + ${attributeName});
       <#else> <#--not a primitive attribute -->
         if (${attributeName} != null)
@@ -30,8 +30,8 @@
         }
       </#if>
     <#elseif field.getName()== "reference" >
-      <#assign referenceName = field.getAttributeValue( "name")>
-      <#assign referenceType = field.getAttributeValue( "type")>
+      <#assign referenceName = field.name>
+      <#assign referenceType = field.type>
       <#assign referenceNameFU = referenceName?cap_first>
       if (${referenceName} != null)
       {
@@ -47,7 +47,7 @@
     <#--Add this field to the apicomment -->
     <#assign previousComment = apicommentText >
     <#assign counter = field_index + 1 >
-    <#assign apicommentText = " ${previousComment} ${counter}) ${field.getAttributeValue('name')}" >
+    <#assign apicommentText = " ${previousComment} ${counter}) ${field.name}" >
   </#list>
   return result.toString();
 

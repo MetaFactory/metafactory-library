@@ -7,34 +7,34 @@
   referenceToMeNameFU
 
 -->
-<#--stop if $currentModelPackage is null-->
-<#if !(currentModelPackage)??>  ${generator.error("currentModelPackage not found in context")} </#if>
+<#--stop if $modelPackage is null-->
+<#if !(modelPackage)??>  ${metafactory.error("modelPackage not found in context")} </#if>
 
-<#--stop if $currentModelObject is null-->
-<#if !(currentModelObject)??>  <#stop "currentModelObject not found in context" ></#if>
+<#--stop if $modelObject is null-->
+<#if !(modelObject)??>  <#stop "modelObject not found in context" ></#if>
 
-<#--stop if $currentModelReference is null-->
-<#if !(currentModelReference)??>  <#stop "currentModelReference not found in context" ></#if>
+<#--stop if $modelReference is null-->
+<#if !(modelReference)??>  <#stop "modelReference not found in context" ></#if>
 
-<#assign reference = currentModelReference >
-<#assign referenceName = reference.getAttributeValue("name") >
+<#assign reference = modelReference >
+<#assign referenceName = reference.name >
 <#assign referenceNameAU = referenceName?upper_case >
-<#assign referenceType = reference.getAttributeValue("type") >
-<#assign multiplicity = reference.getAttributeValue("multiplicity") >
+<#assign referenceType = reference.type >
+<#assign multiplicity = reference.multiplicity >
 <#if (multiplicity != "0..n" && multiplicity != "1..n") >
   <#stop "Invalid multiplicity (${multiplicity}) found. Only 0..n and 1..n is supported by addToSet">
 </#if>
 
-<#assign modelObjectName = currentModelObject.getAttributeValue('name') >
+<#assign modelObjectName = modelObject.name >
 <#-- Find the 0..1 or 1..1 reference to me -->
-<#assign referenceObjectElement = generator.findChildByAttribute(currentModelPackage,"object","name",referenceType) >
+<#assign referenceObjectElement = modelPackage.findObjectByName(referenceType) >
 
 <#--find a reference from this element ($referenceObjectElement) with type modelObjectName -->
-<#assign referenceToMeElements = generator.findChildrenByAttribute(referenceObjectElement,"reference","type",modelObjectName) >
+<#assign referenceToMeElements = referenceObjectElement.findReferencesByType(modelObjectName) >
 
 <#--remove references with multiplicity other than 0..1 or 1..1 -->
 <#list referenceToMeElements as r >
-  <#assign multiplicity = r.getAttributeValue('multiplicity') >
+  <#assign multiplicity = r.multiplicity >
   <#if (multiplicity != "0..1" && multiplicity != "1..1") >
     ${referenceToMeElements.remove(r)}
   </#if>
@@ -49,22 +49,22 @@ when only 1 reference found, create the value of the mappedBy attribute and inse
   <#stop "Invalid model: No reference 0..1 or 1..1 of type ${modelObjectName} found in object with name ${referenceType}." >
 <#elseif (referenceToMeElements.size()>1) >
   <#--The reference to me can be explicitly set in a property (to remove a ambiguity), so first check if there's a property set -->
-  <#if (generator.elementContainsProperty(reference,"opposite.reference.tome")) >
-    <#assign referenceToMeProperty = generator.getElementProperty(reference,"opposite.reference.tome") >
-    <#assign referenceToMe = generator.findChildByAttribute(referenceObjectElement,"reference","name",referenceToMeProperty) >
+  <#if (reference.hasMetaData("opposite.reference.tome")) >
+    <#assign referenceToMeProperty = reference.getMetaData("opposite.reference.tome") >
+    <#assign referenceToMe = referenceObjectElement.findReferenceByName(referenceToMeProperty) >
   <#else>
     <#--
-    No property found, so find the object with name referenceType in currentModelPackage
+    No property found, so find the object with name referenceType in modelPackage
     Assume the first, but add a property so it's easier to change
     -->
     <#assign referenceToMe = referenceToMeElements.get(0) >
-    <#assign name = referenceToMe.getAttributeValue("name") >
-    ${generator.addProperty(reference,"opposite.reference.tome",name)}
+    <#assign name = referenceToMe.name >
+    ${reference.addMetaData("opposite.reference.tome", name)}
     ${context.addWarning("ambiguity found: multiple references with type ${modelObjectName} found in object with name ${referenceType}. => Property added to model with assumption of ${name}")}
   </#if>
 <#else>
   <#assign referenceToMe = referenceToMeElements.get(0) >
 </#if>
 
-<#assign referenceToMeName = referenceToMe.getAttributeValue('name') >
-<#assign referenceToMeNameFU = generator.firstUpper(referenceToMeName) >
+<#assign referenceToMeName = referenceToMe.name >
+<#assign referenceToMeNameFU = metafactory.firstUpper(referenceToMeName) >

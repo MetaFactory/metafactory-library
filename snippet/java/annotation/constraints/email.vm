@@ -3,18 +3,18 @@
   and adds the library org.hibernate.validator.Email to the current class.
   This snippet expects to be called in the context of a pattern attribute
 *#
-##stop if $currentModelAttribute is null
-#if(!$currentModelAttribute)
-  $generator.error("currentModelAttribute not found in context")
+##stop if $modelAttribute is null
+#if(!$modelAttribute)
+  $metafactory.error("modelAttribute not found in context")
 #end
-#set($attribute=$currentModelAttribute)
+#set($attribute=$modelAttribute)
 #set($email="")## set to empty string explicitly, otherwise value is not set to null if nothing found
-#set($email=$generator.getElementProperty(${attribute},"validator.email"))
+#set($email=$attribute.getMetaData("validator.email"))
 #if($email == "true")
-  #if($attribute.getAttributeValue("type")!="String")
-    $generator.error("Invalid validator.email property found at attribute $attribute.getAttributeValue('name')")
+  #if(${attribute.type}!="String")
+    $metafactory.error("Invalid validator.email property found at attribute ${attribute.name}")
   #end
-  ##$generator.addLibraryToClass("org.hibernate.validator.Email")##
+  ##$metafactory.addLibraryToClass("org.hibernate.validator.Email")##
 ##TODO: Check name of class. If not Email, add @Email otherwise org.hibernate.validator.@Email
   @org.hibernate.validator.constraints.Email
 #end

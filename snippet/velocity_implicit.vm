@@ -1,8 +1,4 @@
 #* @implicitly included *#
-#* @vtlvariable name="currentModelPackage" type="org.jdom2.Element" *#
-#* @vtlvariable name="currentModelObject" type="org.jdom2.Element" *#
-#* @vtlvariable name="currentModelReference" type="org.jdom2.Element" *#
-#* @vtlvariable name="currentModelAttribute" type="org.jdom2.Element" *#
 #* @vtlvariable name="var0" type="java.lang.String" *#
 #* @vtlvariable name="var1" type="java.lang.String" *#
 #* @vtlvariable name="var2" type="java.lang.String" *#
@@ -22,8 +18,6 @@
 #* @vtlvariable name="comparatorFactory" type="com.metafactory.api.IComparatorFactory" *#
 #* @vtlvariable name="genpack" type="java.lang.String" *#
 #* @vtlvariable name="genpackpath" type="java.lang.String" *#
-#* @vtlvariable name="previousModelPackage" type="org.jdom2.Element" *#
-#* @vtlvariable name="previousModelObject" type="org.jdom2.Element" *#
 #* @vtlvariable name="foreachPackage" type="java.lang.Boolean" *#
 #* @vtlvariable name="foreachObject" type="java.lang.Boolean" *#
 #* @vtlvariable name="foreachAttribute" type="java.lang.Boolean" *#
@@ -35,7 +29,7 @@
 #* @vtlvariable name="generatedClass" type="org.sxmi.wrapper.api.IXMIClass" *#
 #* @vtlvariable name="generatedAttribute" type="org.sxmi.wrapper.api.IXMIAttribute" *#
 #* @vtlvariable name="generatedOperation" type="org.sxmi.wrapper.api.IXMIOperation" *#
-#* @vtlvariable name="model" type="org.jdom2.Document" *#
+#* @vtlvariable name="sxmiFactory" type="org.sxmi.wrapper.api.IXMIFactory" *#
 #* @vtlvariable name="modelProperties" type="java.util.Properties" *#
 #* @vtlvariable name="modelAttributeProperties" type="java.util.Properties" *#
 #* @vtlvariable name="modelOperationProperties" type="java.util.Properties" *#
@@ -51,3 +45,11 @@
 #* @vtlvariable name="stringUtils" type="org.apache.commons.lang.StringUtils" *#
 #* @vtlvariable name="dollar" type="java.lang.String" *#
 #* @vtlvariable name="hash" type="java.lang.String" *#
+
+#* @vtlvariable name="model" type="com.metafactory.api.model.ModelRoot" *#
+#* @vtlvariable name="modelPackage" type="com.metafactory.api.model.ModelPackage" *#
+#* @vtlvariable name="modelObject" type="com.metafactory.api.model.ModelObject" *#
+#* @vtlvariable name="modelAttribute" type="com.metafactory.api.model.ModelAttribute" *#
+#* @vtlvariable name="modelReference" type="com.metafactory.api.model.ModelReference" *#
+#* @vtlvariable name="previousPackage" type="com.metafactory.api.model.ModelPackage" *#
+#* @vtlvariable name="previousObject" type="com.metafactory.api.model.ModelObject" *#
