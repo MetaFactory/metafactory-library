@@ -39,13 +39,13 @@ Root<${className}> from${className} = cq.from(${className}.class);
 Predicate allCriteria = cb.conjunction();
 
 <#list all as finderItem>
-  <#assign itemName = finderItem.getName()>
+  <#assign itemName = finderItem.kind>
   <#if itemName == "attribute">
     <@useAttributeForFinder finderItem  />
   <#elseif itemName == "reference">
     <@useReferenceForFinder finderItem  />
   <#else>
-    <#stop "Invalid item found in java/cdi/beans/findObjectByFields.ftl. item=" + itemName + ", model=" + modelObjectName + ", propertyName=" + propertyName >
+    <#stop "Invalid item found in java/jpa2/findObjectByFields.ftl. item=" + itemName + ", model=" + modelObjectName + ", propertyName=" + propertyName >
   </#if>
 </#list>
 
@@ -67,7 +67,7 @@ catch(NoResultException nre)
 return result;
 <#------------------------------------------------------------------------------------------------------>
 <#macro useAttributeForFinder attribute>
-  <#local eName = attribute.getName()>
+  <#local eName = attribute.kind>
   <#if eName != "attribute">
     <#stop "macro useAttributeForFinder called with wrong argument. first parameter needs to be a attribute element, but is a " + eName + " instead. object=" + modelObjectName >
   </#if>
@@ -80,7 +80,7 @@ return result;
 </#macro>
 <#------------------------------------------------------------------------------------------------------>
 <#macro useReferenceForFinder reference>
-  <#local eName = reference.getName()>
+  <#local eName = reference.kind>
   <#if eName != "reference">
     <#stop "macro useReferenceForFinder called with wrong argument. first parameter needs to be a reference element, but is a " + eName + " instead. object=" + modelObjectName >
   </#if>
@@ -110,7 +110,7 @@ return result;
     allCriteria = cb.and(allCriteria, equal${referenceNameFU});
 
   <#else>
-    <#stop "A reference with wrong multiplicity (${multiplicity}) found in findObjectByFields.ftl macro useReferenceForFinder. reference=" + referenceName + ", model=" + modelObjectName + ". Only 0..1 or 1..1 can be used." >
+    <#stop "A reference with wrong multiplicity (${multiplicity}) found in java/jpa2/findObjectByFields.ftl macro useReferenceForFinder. reference=" + referenceName + ", model=" + modelObjectName + ". Only 0..1 or 1..1 can be used." >
   </#if>
 
 </#macro>

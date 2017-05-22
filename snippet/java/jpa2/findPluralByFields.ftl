@@ -39,7 +39,7 @@ Root<${className}> from${className} = cq.from(${className}.class);
 Predicate allCriteria = cb.conjunction();
 
 <#list all as finderItem>
-  <#assign itemName = finderItem.getName()>
+  <#assign itemName = finderItem.kind>
   <#if itemName == "attribute">
     <@useAttributeForFinder finderItem  />
   <#elseif itemName == "reference">
@@ -57,7 +57,7 @@ List<${className}> result = q.getResultList();
 return result;
 <#------------------------------------------------------------------------------------------------------>
 <#macro useAttributeForFinder attribute>
-  <#local eName = attribute.getName()>
+  <#local eName = attribute.kind>
   <#if eName != "attribute">
     <#stop "macro useAttributeForFinder called with wrong argument. first parameter needs to be a attribute element, but is a " + eName + " instead. object=" + modelObjectName >
   </#if>
@@ -70,7 +70,7 @@ return result;
 </#macro>
 <#------------------------------------------------------------------------------------------------------>
 <#macro useReferenceForFinder reference>
-  <#local eName = reference.getName()>
+  <#local eName = reference.kind>
   <#if eName != "reference">
     <#stop "macro useReferenceForFinder called with wrong argument. first parameter needs to be a reference element, but is a " + eName + " instead. object=" + modelObjectName >
   </#if>

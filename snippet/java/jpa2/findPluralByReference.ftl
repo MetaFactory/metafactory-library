@@ -1,12 +1,12 @@
 <#--stop if $modelPackage is null-->
 <#if !(modelPackage)??>  ${metafactory.error("modelPackage not found in context")} </#if>
-<#---->
+
 <#--stop if $modelObject is null-->
 <#if !(modelObject)??> <#stop "modelObject not found in context" > </#if>
-<#---->
+
 <#--stop if $modelReference is null-->
 <#if !(modelReference)??>  <#stop "modelReference not found in context" ></#if>
-<#---->
+
 <#assign referenceName = modelReference.name>
 <#assign referenceNameAU = referenceName?upper_case >
 <#assign referenceNameFU = referenceName?cap_first >
