@@ -13,7 +13,7 @@
 
   <#list sortedBusinessKeyFields as field>
     <#if (field_index > 0) > result.append(", "); </#if>
-    <#if field.getName() == "attribute" >
+    <#if field.kind == "attribute" >
       <#assign attributeName = field.name>
       <#assign attributeType = field.type>
       <#assign attributeNameFU = attributeName?cap_first>
@@ -29,7 +29,7 @@
             result.append("${attributeName}=null");
         }
       </#if>
-    <#elseif field.getName()== "reference" >
+    <#elseif field.kind== "reference" >
       <#assign referenceName = field.name>
       <#assign referenceType = field.type>
       <#assign referenceNameFU = referenceName?cap_first>
@@ -42,7 +42,7 @@
         result.append("${referenceName}=null");
       }
     <#else>
-      <#stop "Unexpected businessKey element found: $field.getName(). Only attribute or reference expected.">
+      <#stop "Unexpected businessKey element found: $field.kind. Only attribute or reference expected.">
     </#if>
     <#--Add this field to the apicomment -->
     <#assign previousComment = apicommentText >
