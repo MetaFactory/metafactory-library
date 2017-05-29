@@ -6,7 +6,6 @@
 #* @vtlvariable name="var4" type="java.lang.String" *#
 #* @vtlvariable name="var5" type="java.lang.String" *#
 #* @vtlvariable name="metafactory" type="com.metafactory.api.IMetaFactoryTemplateEngineProxy" *#
-#* @vtlvariable name="generator" type="com.metafactory.api.IMetaFactoryTemplateEngineProxy" *#
 #* @vtlvariable name="context" type="com.metafactory.api.IContextProxy" *#
 #* @vtlvariable name="nsModel" type="org.jdom2.Namespace" *#
 #* @vtlvariable name="nsPattern" type="org.jdom2.Namespace" *#
