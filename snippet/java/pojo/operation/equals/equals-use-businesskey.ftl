@@ -4,7 +4,7 @@
 <#if !(operationPattern)??>  <#stop "operationPattern not found in context => Is this snippet used to create a method?" ></#if>
 
 <#assign compareObject = modelObjectNameFL >
-<#assign apicomment = operationPattern.getChild("apicomment", nsPattern) >
+<#assign apicomment = operationPattern.getExpressionForApiComment() >
 <#assign apicommentText = "Fields used as businesskey:" >
 
 <#if sortedBusinessKeyFields.size() == 0 >
@@ -19,8 +19,8 @@
   -->
   <#assign noPrimitiveBusinessKeys = true >
   <#list sortedBusinessKeyFields as field>
-    <#if field.getName()=="attribute" >
-      <#assign attributeType = field.type >
+    <#if field.isModelAttribute() >
+      <#assign attributeType = field.toModelAttribute().type >
       <#if metafactory.isPrimitiveJavaType(attributeType) >
         <#assign noPrimitiveBusinessKeys = false >
       </#if>
@@ -33,9 +33,10 @@
   <#compress>
   <#list sortedBusinessKeyFields as field>
     <#if (field_index > 0) > else </#if>
-    <#if field.kind == "attribute" >
-      <#assign attributeName = field.name>
-      <#assign attributeType = field.type>
+    <#if field.isModelAttribute() >
+      <#assign attribute = field.toModelAttribute() />
+      <#assign attributeName = attribute.name>
+      <#assign attributeType = attribute.type>
       <#assign attributeNameFU = attributeName?cap_first>
       <#if metafactory.isPrimitiveJavaType(attributeType) >
         <#if metafactory.getJavaType(attributeType) == "boolean" >
@@ -52,9 +53,10 @@
           result = false;
         }
       </#if>
-    <#elseif field.kind== "reference" >
-      <#assign referenceName = field.name>
-      <#assign referenceType = field.type>
+    <#elseif field.isModelReference() >
+      <#assign reference = field.toModelReference() />
+      <#assign referenceName = reference.name>
+      <#assign referenceType = reference.type>
       <#assign referenceNameFU = referenceName?cap_first>
       if (this.get${referenceNameFU}() != null && ! this.get${referenceNameFU}().equals(${compareObject}.get${referenceNameFU}())) {
         result = false;

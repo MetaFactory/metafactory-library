@@ -360,7 +360,7 @@
     </operation>
 
     <!-- Create finders which uses multiple fields and return a single object -->
-    <operation name="find${object.name}By${forEachPropertyValue}" visibility="public" foreach="currentModelObject.property.dao.finder.single.key" var0="${forEachPropertyValue}">
+    <operation name="find${object.name}By${var0}" visibility="public" foreach="currentModelObject.property.dao.finder.single.key" var0="${forEachPropertyValue}">
       <library>${pattern.property.model.implementation.package}.${pattern.property.model.implementation.class}</library>
       <parameter name="return">
         <datatype>${pattern.property.model.implementation.class}</datatype>
@@ -376,7 +376,7 @@
     </operation>
 
     <!-- Create finders which uses multiple fields and return a list -->
-    <operation name="find${model.property.object.name.plural}By${forEachPropertyValue}" visibility="public" foreach="currentModelObject.property.dao.finder.list.key" var0="${forEachPropertyValue}">
+    <operation name="find${model.property.object.name.plural}By${var0}" visibility="public" foreach="currentModelObject.property.dao.finder.list.key" var0="${forEachPropertyValue}">
       <library>java.util.List</library>
       <library>${pattern.property.model.implementation.package}.${pattern.property.model.implementation.class}</library>
       <parameter name="return">

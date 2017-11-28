@@ -3,7 +3,7 @@
 <#--stop if $operationPattern is null-->
 <#if !(operationPattern)??>  <#stop "operationPattern not found in context => Is this snippet used to create a method?" ></#if>
 
-<#assign apicomment = operationPattern.getChild("apicomment", nsPattern) >
+<#assign apicomment = operationPattern.getExpressionForApiComment() >
 <#assign apicommentText = "Fields used as businesskey:" >
 
 int result;
@@ -14,9 +14,10 @@ int result;
   result=14;
 
   <#list businessKeyFields as field>
-    <#if (field.kind=="attribute") >
-        <#assign attributeName = field.name >
-        <#assign attributeType = field.type >
+      <#if field.isModelAttribute() >
+        <#assign attribute = field.toModelAttribute() />
+        <#assign attributeName = attribute.name >
+        <#assign attributeType = attribute.type >
         <#assign attributeNameFU = metafactory.firstUpper(attributeName) >
         <#if (metafactory.isPrimitiveJavaType(attributeType)) >
           <#if (attributeType == "bool" || attributeType == "boolean") >
@@ -30,9 +31,10 @@ int result;
             result = 29*result + this.get${metafactory.firstUpper(attributeName)}().hashCode();
           }
         </#if>
-    <#elseif (field.kind=="reference") >
-        <#assign referenceName = field.name >
-        <#assign referenceType = field.type >
+      <#elseif field.isModelReference() >
+        <#assign reference = field.toModelReference() />
+        <#assign referenceName = reference.name >
+        <#assign referenceType = reference.type >
         <#assign referenceNameFU = referenceName?cap_first >
         if (${referenceName} != null) {
           result = 17*result + ${referenceName}.hashCode();

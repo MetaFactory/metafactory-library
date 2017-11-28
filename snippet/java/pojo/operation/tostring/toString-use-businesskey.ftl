@@ -13,9 +13,10 @@
 
   <#list sortedBusinessKeyFields as field>
     <#if (field_index > 0) > result.append(", "); </#if>
-    <#if field.kind == "attribute" >
-      <#assign attributeName = field.name>
-      <#assign attributeType = field.type>
+      <#if field.isModelAttribute() >
+      <#assign attribute = field.toModelAttribute() />
+      <#assign attributeName = attribute.name>
+      <#assign attributeType = attribute.type>
       <#assign attributeNameFU = attributeName?cap_first>
       <#if metafactory.isPrimitiveJavaType(attributeType) >
         result.append("${attributeName}=" + ${attributeName});
@@ -29,9 +30,10 @@
             result.append("${attributeName}=null");
         }
       </#if>
-    <#elseif field.kind== "reference" >
-      <#assign referenceName = field.name>
-      <#assign referenceType = field.type>
+    <#elseif field.isModelReference() >
+      <#assign reference = field.toModelReference() />
+      <#assign referenceName = reference.name>
+      <#assign referenceType = reference.type>
       <#assign referenceNameFU = referenceName?cap_first>
       if (${referenceName} != null)
       {
@@ -42,7 +44,7 @@
         result.append("${referenceName}=null");
       }
     <#else>
-      <#stop "Unexpected businessKey element found: $field.kind. Only attribute or reference expected.">
+      <#stop "Unexpected businessKey element found: ${field.kind}. Only attribute or reference expected.">
     </#if>
     <#--Add this field to the apicomment -->
     <#assign previousComment = apicommentText >

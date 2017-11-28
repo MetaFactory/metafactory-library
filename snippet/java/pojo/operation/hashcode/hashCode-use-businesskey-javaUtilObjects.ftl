@@ -3,7 +3,7 @@
 <#--stop if $operationPattern is null-->
 <#if !(operationPattern)??>  <#stop "operationPattern not found in context => Is this snippet used to create a method?" ></#if>
 
-<#assign apicomment = operationPattern.getChild("apicomment", nsPattern) >
+<#assign apicomment = operationPattern.getExpressionForApiComment() >
 <#assign apicommentText = "Fields used as businesskey:" >
 
 <#if (businessKeyFields.size()==0) >
@@ -51,7 +51,7 @@
         -->
       ${referenceName}
     <#else>
-      <#stop "Unexpected businessKey element found: ${field.getElementName()}. Only attribute of reference expected." >
+      <#stop "Unexpected businessKey element found: ${field.kind}. Only attribute of reference expected." >
     </#if>
     <#--Add this field to the apicomment -->
     <#assign previousComment = apicommentText >

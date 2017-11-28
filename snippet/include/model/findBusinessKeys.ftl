@@ -26,4 +26,4 @@
 
 <#--comparator sorts elements by value of the specified property-->
 <#assign comparator = comparatorFactory.createMetaDataComparator("businesskey" )>
-<#assign sortedBusinessKeyFields = metafactory.sort(businessKeyFields, comparator)>
+<#assign sortedBusinessKeyFields = metafactory.sortModel(businessKeyFields, comparator)>
